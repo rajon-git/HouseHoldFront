@@ -10,7 +10,7 @@ const handleLogin = (event) => {
     const password = getValue("login-password");
 
     if (username && password) {
-        fetch("http://127.0.0.1:8000/auth/login/", {
+        fetch("https://householdserviceapi.onrender.com/auth/login/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
@@ -22,11 +22,11 @@ const handleLogin = (event) => {
             return res.json();
         })
         .then((data) => {
-            console.log(data);
+            
             if (data.token && data.user_id) {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("user_id", data.user_id);
-                window.location.href = "index.html"; // Redirect after successful login
+                window.location.href = "index.html"; 
             } else {
                 document.getElementById("error").innerText = data.error || "Login failed.";
             }
@@ -40,5 +40,22 @@ const handleLogin = (event) => {
     }
 };
 
-// Add event listener to the login form
+
 document.getElementById('login-form').addEventListener('submit', handleLogin);
+
+
+// const handleLogout =() => {
+//     const token = localStorage.getItem("token")
+//     fetch("https://householdserviceapi.onrender.com/auth/logout/",{
+//         mathod: "POST",
+//         headers: {
+//             'Content-Type': 'application/json',
+//             Authorization: `Token ${token}`
+//         },
+//     }).then(res => {
+//         if(res.ok){
+//             localStorage.removeItem("token")
+//             window.location.href = './index.html'
+//         }
+//     }).catch(err => console.log("Logout Error", err))
+// }

@@ -33,7 +33,7 @@ const handleRegistration = (event) => {
         button.disabled = true;
         button.innerText = "Registering...";
 
-        fetch("http://127.0.0.1:8000/auth/register/", {
+        fetch("https://householdserviceapi.onrender.com/auth/register/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(info),
@@ -43,10 +43,10 @@ const handleRegistration = (event) => {
             button.disabled = false;
             button.innerText = "Register";
             if (data.message) {
-                alert(data.message); // Assuming your API returns a message
+                alert(data.message); 
             } else {
                 alert('Registration successful!');
-                // Optionally reset the form
+                
                 document.getElementById("registration-form").reset();
             }
         })
