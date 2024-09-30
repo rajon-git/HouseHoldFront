@@ -1,11 +1,10 @@
-// Function to get the value of an input by ID
+
 const getValue = (id) => {
     return document.getElementById(id).value;
 };
 
-// Handle the login form submission
 const handleLogin = (event) => {
-    event.preventDefault(); // Prevent the default form submission
+    event.preventDefault(); 
     const username = getValue("login-username");
     const password = getValue("login-password");
 

@@ -1,31 +1,37 @@
-const handleLogout = () => {
-    const token = localStorage.getItem("token");
+function handleLogout() {
+    const token = localStorage.getItem('token');
     if (!token) {
-        console.log("No token found, user may already be logged out.");
-        return; 
+        console.error('No token found, cannot logout.');
+        return;
     }
 
-    fetch("https://householdserviceapi.onrender.com/auth/logout/", {
-        method: "POST", 
+    fetch('https://householdserviceapi.onrender.com/auth/logout/', {
+        method: 'POST',
         headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${token}`
-        },
-    })
-    .then(res => {
-        if (res.ok) {
-            localStorage.removeItem("token");
-            window.location.href = './login.html';
-        } else {
-            // Log status and response
-            console.error(`Logout failed with status: ${res.status}`);
-            return res.text().then(text => {
-                console.error('Response text:', text);
-            });
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`
         }
     })
-    .catch(err => console.log("Logout Error", err));
-};
+    .then(response => {
+        if (response.status === 405) {
+            throw new Error('Method Not Allowed: Check if the method is correct');
+        }
+        if (!response.ok) {
+            throw new Error(`Logout failed with status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        localStorage.removeItem('token');
+        document.getElementById('user-info').style.display = 'none';
+        document.getElementById('login-button').style.display = 'block';
+        window.location.href = '/login';
+    })
+    .catch(error => {
+        console.error('Error:', error.message);
+    });
+}
+
 
 
 fetch("navbar.html")
@@ -34,7 +40,6 @@ fetch("navbar.html")
     document.getElementById("navbar").innerHTML = data;
     let navElement = document.getElementById("user-menu")
     const token = localStorage.getItem("token");
-    console.log(token);
     if(token)
     {
         navElement.innerHTML += `

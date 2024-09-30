@@ -22,13 +22,11 @@ const handleRegistration = (event) => {
     if (password === confirm_password) {
         errorElement.innerText = "";
 
-        // Optional password strength check
         if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(password)) {
             errorElement.innerText = "Password must contain eight characters, at least one letter, one number, and one special character.";
             return;
         }
 
-        // Show loading indication
         const button = document.getElementById('register-button');
         button.disabled = true;
         button.innerText = "Registering...";
