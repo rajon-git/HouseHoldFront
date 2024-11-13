@@ -7,9 +7,10 @@ const Logout = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await logout(); // Call logout API
-    localStorage.removeItem('token'); // Remove token from local storage
-    navigate('/'); // Redirect to login page
+    await logout(); 
+    localStorage.removeItem('token'); 
+    localStorage.removeItem('user_id'); 
+    navigate('/'); 
   };
 
   return (

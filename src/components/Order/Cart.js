@@ -1,98 +1,128 @@
-import React, { useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import { useDeleteCartItemMutation, useGetCartQuery } from '../../features/auth/apiSlice';
+import { toast } from 'react-toastify';
+import {
+  useAddOrderItemMutation,
+  useClearCartMutation,
+  useDeleteCartItemMutation,
+  useGetCartQuery,
+} from '../../features/auth/apiSlice';
+import { useNavigate } from 'react-router-dom';
 
 export default function Cart() {
-  const { data: cartItems = [], isLoading, isError, refetch } = useGetCartQuery(); 
+  const session_key = localStorage.getItem('session_key');
+  const { data: cart, isLoading, isError, error, refetch } = useGetCartQuery(session_key);
+  const [clearCart] = useClearCartMutation();
   const [deleteCartItem] = useDeleteCartItemMutation();
-  const [couponCode, setCouponCode] = useState('');
-  const validCoupons = ["DISCOUNT10", "FREESHIP"];
-  const discountRate = 0.1; // 10% discount for example
+  const [addOrderItem, { isLoading: isOrderLoading }] = useAddOrderItemMutation();
+  const navigate = useNavigate();
+
+  console.log(cart)
 
   const handleRemoveItem = async (id) => {
     try {
       await deleteCartItem(id).unwrap();
       toast.success('Item removed from cart!');
-      refetch(); // Refetch cart items to get the latest state
+      refetch();
     } catch (error) {
       toast.error('Failed to remove item from cart.');
     }
   };
 
-  const handleApplyCoupon = () => {
-    if (validCoupons.includes(couponCode)) {
-      toast.success(`Coupon ${couponCode} applied!`);
-    } else {
-      toast.error('Invalid coupon code.');
+  const handleClearCart = async () => {
+    try {
+      await clearCart(session_key).unwrap();
+      toast.success('Cart cleared successfully!');
+      refetch();
+    } catch (error) {
+      if (error.status === 404) {
+        toast.info('No active cart to clear.');
+      } else {
+        toast.error('Failed to clear cart.');
+      }
     }
   };
+  
 
-  const total = cartItems.reduce((acc, item) => acc + (item.service?.service_fee || 0) * item.quantity, 0);
-  const discount = validCoupons.includes(couponCode) ? total * discountRate : 0;
-  const finalTotal = total - discount;
+  const handleSubmit = async () => {
+    const orderData = {
+      cart: cart.id,  
+      items: cart.items.map(item => ({
+        service: item.service.id,  
+        quantity: item.quantity,   
+      })),
+    };
+  
+    try {
+      await addOrderItem(orderData).unwrap();  
+      toast.success('Order placed successfully!');
+      navigate('/orders')
+      refetch(); 
+    } catch (error) {
+      toast.error('Failed to place order.');
+    }
+  };
+  
 
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
+  const totalServiceFees = cart?.items?.reduce((total, item) => {
+    return total + (item.service?.service_fee || 0) * item.quantity;
+  }, 0).toFixed(2);
 
+  if (isLoading) return <p>Loading...</p>;
+  
   if (isError) {
-    return <p>Error fetching cart items.</p>;
+    const errorMessage = error?.data?.detail === "Cart not found for authenticated user."
+      ? "Cart not found. Please add items to your cart."
+      : "Error fetching cart items.";
+    return <p className="text-center">{errorMessage}</p>;
   }
 
   return (
-    <div className="container-xxl mt-5">
-      <h1 className="mb-4">Service Cart</h1>
-      <table className="table table-bordered">
-        <thead>
-          <tr>
-            <th scope="col">Product</th>
-            <th scope="col">Price</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cartItems.length === 0 ? (
-            <tr>
-              <td colSpan="3" className="text-center">Your cart is empty.</td>
-            </tr>
-          ) : (
-            cartItems.map(item => (
-              <tr key={item.id}>
-                <td className="cart-item">
-                  <img src={item?.service?.image || "https://via.placeholder.com/100"} alt={item.service?.title} style={{ width: '100px' }} />
-                  <span>{item.service?.title}</span>
-                </td>
-                <td>${(item.service?.service_fee || 0).toFixed(2)}</td>
-                <td>
-                  <button className="btn btn-danger" onClick={() => handleRemoveItem(item.id)}>Remove</button>
-                </td>
+    <div className="container-xxl" style={{ marginTop: '100px' }}>
+      <h1 className="mb-4 text-center">Service Cart</h1>
+      {cart?.items && cart.items.length > 0 ? (
+        <>
+          <table className="table table-bordered table-hover">
+            <thead className="table-light">
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Service Fees</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Action</th>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-
-      <div className="row">
-        <div className="col-md-8">
-          <h4>Coupon Code</h4>
-          <div className="input-group mb-3">
-            <input 
-              type="text" 
-              className="form-control" 
-              placeholder="Enter coupon code" 
-              value={couponCode} 
-              onChange={(e) => setCouponCode(e.target.value)} 
-            />
-            <div className="input-group-append">
-              <button className="btn btn-primary" type="button" onClick={handleApplyCoupon}>Apply</button>
-            </div>
+            </thead>
+            <tbody>
+              {cart.items.map(item => (
+                <tr key={item.id}>
+                  <td className="cart-item d-flex align-items-center">
+                    <img
+                      src={item.service?.image || "https://via.placeholder.com/100"}
+                      alt={item.service?.title}
+                      className="rounded mr-3"
+                      style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+                    />
+                    <span>{item.service?.title}</span>
+                  </td>
+                  <td>${(item.service?.service_fee || 0).toFixed(2)}</td>
+                  <td>{item.quantity}</td>
+                  <td>
+                    <button className="btn btn-danger btn-sm" onClick={() => handleRemoveItem(item.id)}>
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="d-flex justify-content-between align-items-center my-4">
+            <h4>Total Service Fees: <span className="text-success">${totalServiceFees}</span></h4>
           </div>
-        </div>
-        <div className="col-md-4 text-right">
-          <h4>Total: ${(finalTotal).toFixed(2)}</h4>
-          <button className="btn btn-success btn-lg">Proceed to Checkout</button>
-        </div>
-      </div>
+          <div className="d-flex justify-content-center">
+            <button onClick={handleClearCart} className="btn btn-warning btn-lg mx-2">Clear Cart</button>
+            <button onClick={handleSubmit} disabled={isOrderLoading} className="btn btn-success btn-lg mx-2">Proceed to Checkout</button>
+          </div>
+        </>
+      ) : (
+        <p className="text-center">Your cart is empty.</p>
+      )}
     </div>
   );
 }

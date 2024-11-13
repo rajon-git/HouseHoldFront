@@ -15,6 +15,9 @@ import Services from './components/services/Services';
 import ServiceDetail from './components/services/ServiceDetail';
 import ProtectedRoute from './components/middleware/ProtectedRoute';
 import Cart from './components/Order/Cart';
+import NotFound from './components/base/NotFound';
+import OrdersPage from './components/Order/OrdersPage';
+
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
@@ -25,6 +28,7 @@ const App = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token'); 
+    localStorage.removeItem('user_id'); 
     setIsAuthenticated(false);
   };
 
@@ -37,10 +41,9 @@ const App = () => {
 
   return (
     <Router>
-      <div>
-        <div style={{ marginBottom: '90px' }}>
-          <Header isAuthenticated={isAuthenticated} handleLogout={handleLogout}/>
-        </div>
+      <div id="root">
+        <Header isAuthenticated={isAuthenticated} handleLogout={handleLogout}/>
+        <main>
           <Routes>
             <Route path="/" element={<Homepage isAuthenticated={isAuthenticated} handleLogout={handleLogout} />} />
             <Route path="/login" element={<Login handleLogin={handleLogin} />} />
@@ -52,12 +55,16 @@ const App = () => {
             <Route path="/edit-profile" element={<ProtectedRoute isAuthenticated={isAuthenticated} element={<ProfileUpdate />} />} />
             <Route path="/services" element={<Services />} />
             <Route path="/services/:id" element={<ServiceDetail />} />
-            <Route path="/cart" element={<ProtectedRoute isAuthenticated={isAuthenticated} element={<Cart />} />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="*" element={<NotFound />} /> {/* Catch-all for 404 */}
           </Routes>
-          <Footer/>
-        </div>
+        </main>
+        <Footer />
+      </div>
     </Router>
   );
 };
 
 export default App;
+

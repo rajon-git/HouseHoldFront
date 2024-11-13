@@ -34,7 +34,7 @@ const Register = () => {
 
   return (
     <>
-    <div className="container" style={{marginBottom: '200px'}}>
+    <div className="container" style={{ marginTop: '100px' }}>
       <h2 className="text-center mb-4">Register</h2>
       <div className="row justify-content-center">
         <div className="col-md-6">

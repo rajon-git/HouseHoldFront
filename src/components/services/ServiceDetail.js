@@ -21,17 +21,25 @@ const ServiceDetail = () => {
             setReviewText('');
         }
     };
-
-    const handleAddToCart = async () => {
-        if (!service) return;
+    const handleAddToCart = async (serviceId, quantity) => {
         try {
-            await addCartItem({ service_id: service.id }).unwrap();
-            toast.success('Item added to cart!');
-            navigate('/cart');
+          const sessionKey = sessionStorage.getItem('sessionid');
+          const payload = {
+            service_id: service.id,
+            quantity: 1,
+            session_key: sessionKey || undefined, 
+          };
+          const response = await addCartItem(payload).unwrap();
+          if (response.session_key) {
+            sessionStorage.setItem('session_key', response.session_key);
+          }
+          toast.success('Item added to cart!');
+          navigate('/cart');
         } catch (error) {
-            toast.error("Failed to add item to cart."); 
+          console.error(error);
+          toast.error('Failed to add item to cart.');
         }
-    };
+      };
 
     if (isLoading) {
         return <p>Loading...</p>;
@@ -47,19 +55,19 @@ const ServiceDetail = () => {
     }
 
     return (
-        <div className="container-xxl mt-5">
+        <div className="container-xxl" style={{ marginTop: '90px' }}>
             <h2 className="text-center mb-4">{service.title}</h2>
             <div className="row">
                 <div className="col-md-6">
-                    <img src={service.image} alt={service.title} className="img-fluid rounded" />
+                    <img src={service?.image} alt={service?.title} className="img-fluid rounded" />
                 </div>
                 <div className="col-md-6">
                     <h5>Description</h5>
-                    <p>{service.description}</p>
+                    <p>{service?.description}</p>
                     <h5>Service Fee</h5>
-                    <p>${service.service_fee}</p>
+                    <p>${service?.service_fee}</p>
                     <h5>Availability</h5>
-                    <p>{service.is_available ? "Available" : "Not Available"}</p>
+                    <p>{service?.is_available ? "Available" : "Not Available"}</p>
                     <button className="btn btn-primary mt-3" onClick={handleAddToCart}>Add to cart</button>
                     <button className="btn btn-primary mx-4 mt-3">
                         <Link className='text-white text-decoration-none' to="/services">

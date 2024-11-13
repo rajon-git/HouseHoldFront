@@ -3,7 +3,7 @@ import { Carousel } from 'react-bootstrap';
 
 const HeroPage = () => {
     return (
-      <div style={{marginTop: '-40px'}}>
+      <div className='mt-5'>
         <Carousel>
             <Carousel.Item>
                 <img

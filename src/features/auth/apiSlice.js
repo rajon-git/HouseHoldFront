@@ -1,18 +1,27 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import Cookies from 'js-cookie';
 
 const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://householdserviceapi.onrender.com/',
+    // baseUrl: 'https://householdserviceapi.onrender.com/',
+    baseUrl: 'http://127.0.0.1:8000/',
+    credentials: 'include',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
+      // const session_key = Cookies.get('session_key'); 
+
       if (token) {
         headers.set('Authorization', `Token ${token}`);
       }
+      // if (session_key) {
+      //   headers.set('session_key', session_key); 
+      // }
+
       return headers;
     },
   }),
-  tagTypes: ["services", "service"],
+  tagTypes: ["services", "service", "cart", "order"],
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (userData) => ({
@@ -66,38 +75,65 @@ const apiSlice = createApi({
       query: () => 'auth/profile/',
       method: 'GET', 
     }),
-    getCategoriues: builder.query({
+    getCategories: builder.query({
       query: () => 'service/categories/',
     }),
     getServices: builder.query({
-      query: () => 'service/',
+      query: ({ page }) => `service/?page=${page}`,
       method: 'GET',
       providesTags: ["services"] 
     }),
     getService: builder.query({
       query: (id) => `/service/${id}/`, 
       method: 'GET',
-      providesTags: ["service"]
-  }),
-    getCart : builder.query({
-      query: () => 'cart/',
+      // providesTags: ["service"]
+    }),
+    getFeaturedServices: builder.query({ 
+      query : () => 'service/featured/',
       method: 'GET',
-      providesTags: ["service"]
+      
     }),
     addCartItem: builder.mutation({
-      query: (newItem) => ({
+      query: (body) => ({
         url: 'cart/add/',
         method: 'POST',
-        body: newItem,
+        body: body,
+        credentials: 'include',  
       }),
-      invalidatesTags: ["services", "service"]
+      invalidatesTags: ["cart"],
+    }),
+    getCart: builder.query({
+      query: () => 'cart/',
+      providesTags: ["cart"],
     }),
     deleteCartItem: builder.mutation({
       query: (id) => ({
-        url: `cart/delete/${id}/`,
+        url: `cart/remove/${id}/`,
         method: 'DELETE',
       }),
+      invalidatesTags: ["cart"],
     }),
+    clearCart: builder.mutation({
+      query: () => ({
+        url: 'cart/clear_cart/',
+        method: 'DELETE',
+      }),
+      invalidatesTags: ["cart"],
+    }),
+    addOrderItem: builder.mutation({
+      query: (orderData) => {
+        return {
+          url: 'order/create/', 
+          method: 'POST',       
+          body: orderData          
+        };
+      }
+    }),
+
+    UserOrders: builder.query({
+      query: () => 'orders/my/',
+    }),
+    
   }),
 });
 
@@ -114,8 +150,12 @@ export const {
   useAddCartItemMutation,
   useGetCartQuery,
   useDeleteCartItemMutation,
-  useGetCategoriuesQuery,
+  useGetCategoriesQuery,
   useGetServiceQuery,
+  useGetFeaturedServicesQuery,
+  useAddOrderItemMutation,
+  useClearCartMutation,
+  useUserOrdersQuery,
 } = apiSlice;
 
 export default apiSlice;

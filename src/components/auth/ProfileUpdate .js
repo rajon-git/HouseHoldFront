@@ -66,7 +66,7 @@ const ProfileUpdate = () => {
   if (error) return <p>Error loading profile: {error.message}</p>;
 
   return (
-    <div className="container mt-5" style={{marginBottom: '10px'}}>
+    <div className="container" style={{ marginTop: '70px', marginBottom: '10px' }}>
       <h2 className="text-center mb-4">Update Profile</h2>
       <div className="text-center mb-4">
         {existingImageURL && (

@@ -22,8 +22,10 @@ const ProfileView = () => {
   if (error) return <p>Error loading profile: {error.message}</p>;
 
   return (
-    <div className="container mt-5" style={{marginBottom: '180px'}}>
-      <h2 className="text-center mb-4">Profile</h2>
+    <div className="container" style={{ marginTop: '100px' }}>
+      <h2 className="text-center mb-4">
+      {(location.state?.profile.first_name || profile.first_name) || 'N/A'}
+      </h2>
       <div className="text-center mb-4">
         {existingImageURL && (
           <img
