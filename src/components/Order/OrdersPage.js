@@ -4,8 +4,6 @@ import { useUserOrdersQuery } from '../../features/auth/apiSlice';
 const OrdersPage = () => {
   const { data: orders, error, isLoading } = useUserOrdersQuery();
 
-  console.log(orders);
-
   return (
     <div className="container" style={{ marginTop: '70px' }}>
       <h1 className="text-center mb-4">Your Orders</h1>

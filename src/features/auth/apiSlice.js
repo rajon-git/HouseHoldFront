@@ -138,11 +138,27 @@ const apiSlice = createApi({
     UserOrders: builder.query({
       query: () => 'order/my-orders/',
     }),
+
+    incrementCartItem: builder.mutation({
+      query: (itemId) => ({
+        url: `/cart/${itemId}/increment/`,
+        method: 'POST',
+      }),
+    }),
+
+    decrementCartItem: builder.mutation({
+      query: (itemId) => ({
+        url: `/cart/${itemId}/decrement/`,
+        method: 'POST',
+      }),
+    }),
     
   }),
 });
 
 export const {
+  useIncrementCartItemMutation,
+  useDecrementCartItemMutation,
   useRegisterMutation,
   useLoginMutation,
   useVerifyCodeMutation,

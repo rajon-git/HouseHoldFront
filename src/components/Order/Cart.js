@@ -1,19 +1,50 @@
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   useAddOrderItemMutation,
   useClearCartMutation,
+  useDecrementCartItemMutation,
   useDeleteCartItemMutation,
   useGetCartQuery,
+  useIncrementCartItemMutation,
 } from '../../features/auth/apiSlice';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 export default function Cart() {
+  // const cartItems = useSelector(state => state.cart.items);
   const session_key = localStorage.getItem('session_key');
   const { data: cart, isLoading, isError, error, refetch } = useGetCartQuery(session_key);
   const [clearCart] = useClearCartMutation();
   const [deleteCartItem] = useDeleteCartItemMutation();
   const [addOrderItem, { isLoading: isOrderLoading }] = useAddOrderItemMutation();
   const navigate = useNavigate();
+  const [incrementCartItem] = useIncrementCartItemMutation();
+  const [decrementCartItem] = useDecrementCartItemMutation();
+
+  // State for address form and payment method
+  const [address, setAddress] = useState({
+    name: '',
+    phone: '',
+    house: '',
+    road: '',
+    ward: '',
+    city: '',
+    state: '',
+  });
+  const [paymentType, setPaymentType] = useState('cash'); // Default to 'cash'
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setAddress((prevState) => ({
+      ...prevState,
+      [id]: value,
+    }));
+  };
+
+  const handlePaymentTypeChange = (e) => {
+    setPaymentType(e.target.value);
+  };
 
   const handleRemoveItem = async (id) => {
     try {
@@ -38,89 +69,277 @@ export default function Cart() {
       }
     }
   };
+
+  const handleIncrement = async (itemId) => {
+    try {
+      await incrementCartItem(itemId).unwrap();
+      refetch(); // Refetch cart to update the quantity after the increment
+      toast.success('Quantity increased!');
+    } catch (error) {
+      toast.error('Failed to increase quantity.');
+    }
+  };
+  
+  const handleDecrement = async (itemId) => {
+    try {
+      await decrementCartItem(itemId).unwrap();
+      refetch(); // Refetch cart to update the quantity after the decrement
+      toast.success('Quantity decreased!');
+    } catch (error) {
+      toast.error('Failed to decrease quantity.');
+    }
+  };
   
 
   const handleSubmit = async () => {
     const orderData = {
-      cart: cart?.id,  
-      items: cart?.items?.map(item => ({
-        service: item?.service.id,  
-        quantity: item?.quantity,   
+      cart: cart?.id,
+      items: cart?.items?.map((item) => ({
+        service: item?.service.id,
+        quantity: item?.quantity,
       })),
+      name: address.name,
+      phone: address.phone,
+      house: address.house,
+      road: address.road,
+      ward: address.ward,
+      city: address.city,
+      state: address.state,
+      payment_type: paymentType, // Include selected payment type
     };
-  
+
     try {
-      await addOrderItem(orderData).unwrap();  
+      await addOrderItem(orderData).unwrap();
       toast.success('Order placed successfully!');
-      navigate('/orders')
-      refetch(); 
+      navigate('/orders');
+      refetch();
     } catch (error) {
       toast.error('Failed to place order.');
     }
   };
-  
 
   const totalServiceFees = cart?.items?.reduce((total, item) => {
     return total + (item.service?.service_fee || 0) * item.quantity;
   }, 0).toFixed(2);
 
   if (isLoading) return <p>Loading...</p>;
-  
+
   if (isError) {
-    const errorMessage = error?.data?.detail === "Cart not found for authenticated user."
-      ? "Cart not found. Please add items to your cart."
-      : "Error fetching cart items.";
+    const errorMessage =
+      error?.data?.detail === 'Cart not found for authenticated user.'
+        ? 'Cart not found. Please add items to your cart.'
+        : 'Error fetching cart items.';
     return <p className="text-center">{errorMessage}</p>;
   }
 
   return (
     <div className="container-xxl" style={{ marginTop: '100px' }}>
       <h1 className="mb-4 text-center">Service Cart</h1>
-      {cart?.items && cart.items.length > 0 ? (
-        <>
-          <table className="table table-bordered table-hover">
-            <thead className="table-light">
-              <tr>
-                <th scope="col">Product</th>
-                <th scope="col">Service Fees</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cart.items.map(item => (
-                <tr key={item.id}>
-                  <td className="cart-item d-flex align-items-center">
-                  <img
-                    src={`${process.env.REACT_APP_BACKEND_URL}${item.service?.image}`}
-                    alt={item?.service?.title}
-                    className="rounded mr-3"
-                    style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+      <div className="row">
+        <div className="col-md-8">
+          {cart?.items && cart.items.length > 0 ? (
+            <>
+              <table className="table table-bordered table-hover">
+                <thead className="table-light">
+                  <tr>
+                    <th scope="col">Product</th>
+                    <th scope="col">Items</th>
+                    <th scope="col">Service Fees</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cart.items.map((item) => (
+                    <tr key={item.id}>
+                      <td className="cart-item d-flex align-items-center">
+                        <img
+                          src={`${process.env.REACT_APP_BACKEND_URL}${item.service?.image}`}
+                          alt={item?.service?.title}
+                          className="rounded mr-3"
+                          style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+                        />
+                        <span>{item.service?.title}</span>
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => handleDecrement(item.id)}
+                          className="btn btn-outline-danger btn-sm mx-2"
+                          style={{ padding: '5px 15px', fontSize: '18px', borderRadius: '50%' }}
+                        >
+                          -
+                        </button>
+                        <span className="fw-bold" style={{ fontSize: '16px', margin: '0 10px' }}>
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => handleIncrement(item.id)}
+                          className="btn btn-outline-success btn-sm mx-2"
+                          style={{ padding: '5px 15px', fontSize: '18px', borderRadius: '50%' }}
+                        >
+                          +
+                        </button>
+                      </td>
+
+                      <td>${(item.service?.service_fee || 0).toFixed(2)}</td>
+                      <td>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleRemoveItem(item.id)}
+                        >
+                          Remove
+                        </button>
+                      </td>
+                      
+                    </tr>
+                  ))}
+                  {cart.items.length > 0 && (
+                    <tr>
+                      <td colSpan="4" className="text-center">
+                        <button
+                          onClick={handleClearCart}
+                          className="btn btn-warning btn-lg"
+                        >
+                          Clear Cart
+                        </button>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </>
+          ) : (
+            <p className="text-center">Your cart is empty.</p>
+          )}
+        </div>
+        <div className="col-md-4">
+          <div className="card shadow-sm border-0">
+            <div className="card-body">
+              <p className="card-text fs-4 fw-bold text-dark">
+                Total Service Fees: ${totalServiceFees}
+              </p>
+              <hr />
+              <h6 className="text-muted mb-3">Address Details</h6>
+              <form>
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    id="name"
+                    className="form-control"
+                    placeholder="Contact Person Name"
+                    value={address.name}
+                    onChange={handleInputChange}
+                    required
                   />
-                    <span>{item.service?.title}</span>
-                  </td>
-                  <td>${(item.service?.service_fee || 0).toFixed(2)}</td>
-                  <td>{item.quantity}</td>
-                  <td>
-                    <button className="btn btn-danger btn-sm" onClick={() => handleRemoveItem(item.id)}>
-                      Remove
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="d-flex justify-content-between align-items-center my-4">
-            <h4>Total Service Fees: <span className="text-success">${totalServiceFees}</span></h4>
+                </div>
+                <div className="mb-3">
+                  <input
+                    type="tel"
+                    id="phone"
+                    className="form-control"
+                    placeholder="Enter your phone number"
+                    value={address.phone}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <input
+                      type="text"
+                      id="house"
+                      className="form-control"
+                      placeholder="Enter house number"
+                      value={address.house}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <input
+                      type="text"
+                      id="road"
+                      className="form-control"
+                      placeholder="Enter road number"
+                      value={address.road}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <input
+                      type="text"
+                      id="ward"
+                      className="form-control"
+                      placeholder="Enter ward number"
+                      value={address.ward}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <input
+                      type="text"
+                      id="city"
+                      className="form-control"
+                      placeholder="Enter city"
+                      value={address.city}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    id="state"
+                    className="form-control"
+                    placeholder="Enter state"
+                    value={address.state}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                
+                <div className="mb-3">
+                  <label className="form-label">Payment Type</label>
+                  <div>
+                    <label>
+                      <input
+                        type="radio"
+                        name="payment_type"
+                        value="cash"
+                        checked={paymentType === 'cash'}
+                        onChange={handlePaymentTypeChange}
+                      />
+                      Cash
+                    </label>
+                    <label className="ms-3">
+                      <input
+                        type="radio"
+                        name="payment_type"
+                        value="bkash"
+                        checked={paymentType === 'bkash'}
+                        onChange={handlePaymentTypeChange}
+                      />
+                      Bkash
+                    </label>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleSubmit}
+                  disabled={isOrderLoading}
+                  className="btn btn-success btn-lg w-100 mt-3"
+                >
+                  Proceed to Checkout
+                </button>
+              </form>
+            </div>
           </div>
-          <div className="d-flex justify-content-center mb-3">
-            <button onClick={handleClearCart} className="btn btn-warning btn-lg mx-2">Clear Cart</button>
-            <button onClick={handleSubmit} disabled={isOrderLoading} className="btn btn-success btn-lg mx-2">Proceed to Checkout</button>
-          </div>
-        </>
-      ) : (
-        <p className="text-center">Your cart is empty.</p>
-      )}
+        </div>
+      </div>
     </div>
   );
 }
