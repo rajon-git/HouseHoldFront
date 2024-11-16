@@ -15,8 +15,6 @@ export default function Cart() {
   const [addOrderItem, { isLoading: isOrderLoading }] = useAddOrderItemMutation();
   const navigate = useNavigate();
 
-  console.log(cart)
-
   const handleRemoveItem = async (id) => {
     try {
       await deleteCartItem(id).unwrap();
@@ -44,10 +42,10 @@ export default function Cart() {
 
   const handleSubmit = async () => {
     const orderData = {
-      cart: cart.id,  
-      items: cart.items.map(item => ({
-        service: item.service.id,  
-        quantity: item.quantity,   
+      cart: cart?.id,  
+      items: cart?.items?.map(item => ({
+        service: item?.service.id,  
+        quantity: item?.quantity,   
       })),
     };
   
@@ -93,12 +91,12 @@ export default function Cart() {
               {cart.items.map(item => (
                 <tr key={item.id}>
                   <td className="cart-item d-flex align-items-center">
-                    <img
-                      src={item.service?.image || "https://via.placeholder.com/100"}
-                      alt={item.service?.title}
-                      className="rounded mr-3"
-                      style={{ width: '80px', height: '80px', objectFit: 'cover' }}
-                    />
+                  <img
+                    src={`${process.env.REACT_APP_BACKEND_URL}${item.service?.image}`}
+                    alt={item?.service?.title}
+                    className="rounded mr-3"
+                    style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+                  />
                     <span>{item.service?.title}</span>
                   </td>
                   <td>${(item.service?.service_fee || 0).toFixed(2)}</td>
@@ -115,7 +113,7 @@ export default function Cart() {
           <div className="d-flex justify-content-between align-items-center my-4">
             <h4>Total Service Fees: <span className="text-success">${totalServiceFees}</span></h4>
           </div>
-          <div className="d-flex justify-content-center">
+          <div className="d-flex justify-content-center mb-3">
             <button onClick={handleClearCart} className="btn btn-warning btn-lg mx-2">Clear Cart</button>
             <button onClick={handleSubmit} disabled={isOrderLoading} className="btn btn-success btn-lg mx-2">Proceed to Checkout</button>
           </div>

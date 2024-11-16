@@ -289,3 +289,89 @@ p {
   margin: 20px 0;
   animation: fadeIn 1s ease-in; 
 }
+
+
+
+
+.review-section {
+  width: 45%;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.review-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.review-form textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.review-form button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.star-rating p {
+  margin-bottom: 5px;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+}
+
+.star-rating .ReactStars__stars {
+  margin-top: 5px;
+}
+
+
+.star-rating .stars {
+  display: flex;
+  align-items: center;
+}
+
+.review-form .form-control {
+  resize: none;
+  font-size: 14px;
+}
+
+.list-group-item {
+  background-color: #f9f9f9;
+  margin-bottom: 10px;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.list-group-item:hover {
+  background-color: #e9ecef;
+}
+
+
+.badge-completed {
+  background-color: green;
+  color: white;
+}
+
+.badge-pending {
+  background-color: yellow;
+  color: black;
+}
+
+.badge-canceled {
+  background-color: red;
+  color: white;
+}
+

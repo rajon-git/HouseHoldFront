@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import Cookies from 'js-cookie';
 
 const apiSlice = createApi({
   reducerPath: 'api',
@@ -9,15 +8,9 @@ const apiSlice = createApi({
     credentials: 'include',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
-      // const session_key = Cookies.get('session_key'); 
-
       if (token) {
         headers.set('Authorization', `Token ${token}`);
       }
-      // if (session_key) {
-      //   headers.set('session_key', session_key); 
-      // }
-
       return headers;
     },
   }),
@@ -84,9 +77,19 @@ const apiSlice = createApi({
       providesTags: ["services"] 
     }),
     getService: builder.query({
-      query: (id) => `/service/${id}/`, 
+      query: (id) => `service/${id}/`, 
       method: 'GET',
       // providesTags: ["service"]
+    }),
+    createReview: builder.mutation({
+      query: (body) => ({
+        url: 'service/reviews/create/',
+        method: 'POST',
+        body: body 
+      })
+    }),
+    getReviewsByService: builder.query({
+      query: (serviceId) => `/service/reviews/${serviceId}/`, 
     }),
     getFeaturedServices: builder.query({ 
       query : () => 'service/featured/',
@@ -101,10 +104,12 @@ const apiSlice = createApi({
         credentials: 'include',  
       }),
       invalidatesTags: ["cart"],
+      
     }),
     getCart: builder.query({
       query: () => 'cart/',
       providesTags: ["cart"],
+      
     }),
     deleteCartItem: builder.mutation({
       query: (id) => ({
@@ -131,7 +136,7 @@ const apiSlice = createApi({
     }),
 
     UserOrders: builder.query({
-      query: () => 'orders/my/',
+      query: () => 'order/my-orders/',
     }),
     
   }),
@@ -156,6 +161,8 @@ export const {
   useAddOrderItemMutation,
   useClearCartMutation,
   useUserOrdersQuery,
+  useCreateReviewMutation,
+  useGetReviewsByServiceQuery
 } = apiSlice;
 
 export default apiSlice;

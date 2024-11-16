@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useUserOrdersQuery } from '../../features/auth/apiSlice';
 
 const OrdersPage = () => {
   const { data: orders, error, isLoading } = useUserOrdersQuery();
 
-  console.log(orders)
-  
+  console.log(orders);
+
   return (
-    <div className="container my-5">
+    <div className="container" style={{ marginTop: '70px' }}>
       <h1 className="text-center mb-4">Your Orders</h1>
 
-      {/* Loading state */}
       {isLoading && (
         <div className="d-flex justify-content-center">
           <div className="spinner-border text-primary" role="status">
@@ -19,7 +18,6 @@ const OrdersPage = () => {
         </div>
       )}
 
-      {/* Error state */}
       {error && (
         <div className="alert alert-danger text-center">
           There was an error fetching your orders.
@@ -33,41 +31,45 @@ const OrdersPage = () => {
         </div>
       )}
 
-      {/* Orders list */}
-      <div className="row">
-        {orders?.map(order => (
-          <div key={order.id} className="col-md-4 mb-4">
-            <div className="card shadow-sm">
-              <div className="card-body">
-                <h5 className="card-title">Order ID: {order.id}</h5>
-                <h6 className="card-subtitle mb-2 text-muted">
-                  {new Date(order.created_at).toLocaleDateString()}
-                </h6>
-                <p className="card-text">
-                  <strong>Status:</strong> 
-                  <span
-                    className={`badge ${
-                      order.status === 'completed'
-                        ? 'badge-success'
-                        : order.status === 'pending'
-                        ? 'badge-warning'
-                        : 'badge-danger'
-                    }`}
-                  >
+      {/* Orders Table */}
+      {orders?.length > 0 && (
+        <div className="table-responsive">
+          <table className="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Order ID</th>
+                <th scope="col">Date</th>
+                <th scope="col">Status</th>
+                <th scope="col">Total Price</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders?.map((order) => (
+                <tr key={order?.id}>
+                  <td>{order.id}</td>
+                  <td>{new Date(order.created_at).toLocaleDateString()}</td>
+                  <td>
+                  <span className={
+                    `badge ${order.status === 'completed' ? 
+                    'badge-completed' : order.status === 'pending' ? 
+                    'badge-pending' : 'badge-canceled'}`
+                  }>
                     {order.status}
                   </span>
-                </p>
-                <p className="card-text">
-                  <strong>Total Price:</strong> ${order.total_price}
-                </p>
-                <a href={`/order/${order.id}`} className="btn btn-primary">
-                  View Details
-                </a>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+                  </td>
+                  <td>${order.total_price}</td>
+                  <td>
+                    <a href={`/order/${order.id}`} className="btn btn-primary btn-sm">
+                      View Details
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

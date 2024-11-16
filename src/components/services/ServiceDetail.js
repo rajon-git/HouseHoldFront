@@ -1,52 +1,76 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useAddCartItemMutation, useGetServiceQuery } from '../../features/auth/apiSlice';
+import { useAddCartItemMutation, useCreateReviewMutation, useGetReviewsByServiceQuery, useGetServiceQuery } from '../../features/auth/apiSlice';
 import '../../App.css';
 import toast from 'react-hot-toast';
+import { FaStar } from 'react-icons/fa';
 
 const ServiceDetail = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const { data: service, isLoading, isError, error } = useGetServiceQuery(id);
-    
-    const [reviews, setReviews] = useState([]);
+    const { data: reviews } = useGetReviewsByServiceQuery(id);
+
     const [reviewText, setReviewText] = useState('');
-
+    const [rating, setRating] = useState(0);
+    const [rateColor, setRateColor] = useState(null);
+    const [createReview] = useCreateReviewMutation();
     const [addCartItem] = useAddCartItemMutation();
+    const [errorMessage, setErrorMessage] = useState('');
 
-    const handleReviewSubmit = (e) => {
-        e.preventDefault();
-        if (reviewText) {
-            setReviews([...reviews, reviewText]);
-            setReviewText('');
+    const handleAddToCart = async () => {
+        try {
+            const sessionKey = sessionStorage.getItem('sessionid');
+            const payload = {
+                service_id: service.id,
+                quantity: 1,
+                session_key: sessionKey || undefined,
+            };
+            const response = await addCartItem(payload).unwrap();
+            if (response.session_key) {
+                sessionStorage.setItem('session_key', response.session_key);
+            }
+
+            toast.success('Item added to cart!');
+            navigate('/cart');
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to add item to cart.');
         }
     };
-    const handleAddToCart = async (serviceId, quantity) => {
-        try {
-          const sessionKey = sessionStorage.getItem('sessionid');
-          const payload = {
-            service_id: service.id,
-            quantity: 1,
-            session_key: sessionKey || undefined, 
-          };
-          const response = await addCartItem(payload).unwrap();
-          if (response.session_key) {
-            sessionStorage.setItem('session_key', response.session_key);
-          }
-          toast.success('Item added to cart!');
-          navigate('/cart');
-        } catch (error) {
-          console.error(error);
-          toast.error('Failed to add item to cart.');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Validate review text and rating before submission
+        if (!reviewText || rating <= 0) {
+            setErrorMessage('Please enter both a review and a rating.');
+            return;
         }
-      };
+
+        try {
+            const reviewData = {
+                service: service.id,
+                comment: reviewText,
+                rating: rating,
+            };
+
+            await createReview(reviewData).unwrap();
+            toast.success('Review submitted successfully!');
+            setReviewText('');
+            setRating(0); // Reset rating after submission
+        } catch (error) {
+            toast.error('Login required');
+            navigate("/login")
+        }
+    };
 
     if (isLoading) {
         return <p>Loading...</p>;
     }
 
     if (isError) {
-        console.error('Error details:', error); 
+        console.error('Error details:', error);
         return <p>Error fetching service details: {error.message}</p>;
     }
 
@@ -61,6 +85,7 @@ const ServiceDetail = () => {
                 <div className="col-md-6">
                     <img src={service?.image} alt={service?.title} className="img-fluid rounded" />
                 </div>
+               
                 <div className="col-md-6">
                     <h5>Description</h5>
                     <p>{service?.description}</p>
@@ -69,8 +94,8 @@ const ServiceDetail = () => {
                     <h5>Availability</h5>
                     <p>{service?.is_available ? "Available" : "Not Available"}</p>
                     <button className="btn btn-primary mt-3" onClick={handleAddToCart}>Add to cart</button>
-                    <button className="btn btn-primary mx-4 mt-3">
-                        <Link className='text-white text-decoration-none' to="/services">
+                    <button className="btn btn-secondary mx-4 mt-3">
+                        <Link className="text-white text-decoration-none" to="/services">
                             View Services
                         </Link>
                     </button>
@@ -78,29 +103,71 @@ const ServiceDetail = () => {
             </div>
 
             <div className="mt-5">
-                <h3>Reviews</h3>
-                <form onSubmit={handleReviewSubmit} className="review-form mb-4">
-                    <textarea 
-                        value={reviewText} 
-                        onChange={(e) => setReviewText(e.target.value)} 
-                        placeholder="Write your review here..."
-                        className="form-control" 
-                        rows="4"
-                        required
-                    />
-                    <button type="submit" className="btn btn-primary mt-2">Submit Review</button>
+                <h3>Leave a Review</h3>
+                <form onSubmit={handleSubmit} className="review-form">
+                    <div className="star-rating mt-3">
+                        <p>Rate the service:</p><br />
+                        <div className="stars">
+                            {[...Array(5)].map((star, index) => {
+                                const currentRate = index + 1;
+                                return (
+                                    <FaStar
+                                        key={currentRate}
+                                        size={30}
+                                        color={currentRate <= (rateColor || rating) ? "yellow" : "grey"}
+                                        onClick={() => setRating(currentRate)}
+                                        style={{ cursor: "pointer", marginRight: "10px" }}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <textarea
+                            value={reviewText}
+                            onChange={(e) => setReviewText(e.target.value)}
+                            placeholder="Write your review here..."
+                            className="form-control"
+                            rows="2"
+                            required
+                        />
+                    </div>
+
+                    {errorMessage && <div className="alert alert-danger mt-2">{errorMessage}</div>}
+
+                    <button type="submit" className="btn btn-primary mt-3">
+                        Submit Review
+                    </button>
                 </form>
 
-                <div className="reviews">
-                    {reviews.length > 0 ? (
-                        reviews.map((review, index) => (
-                            <div key={index} className="review-card mb-2">
-                                <p>{review}</p>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No reviews yet.</p>
-                    )}
+                <div className='w-50'>
+                    <h3>Reviews for Service</h3>
+                    <ul className="list-group">
+                        {reviews && reviews?.map((review) => (
+                            <li key={review.id} className="list-group-item">
+                                <div className="d-flex justify-content-between">
+                                    <div>
+                                        {[...Array(5)].map((star, index) => {
+                                            return (
+                                                <FaStar
+                                                    key={index}
+                                                    size={15}
+                                                    color={index < review.rating ? "yellow" : "grey"}
+                                                    style={{ marginRight: "5px" }}
+                                                />
+                                            );
+                                        })}
+                                        <p>
+                                            {review?.user?.first_name} {review?.user?.last_name}
+                                        </p>
+                                    </div>
+                                    
+                                    <span>{new Date(review.created).toLocaleDateString()}</span>
+                                </div>
+                                <p>{review?.comment}</p>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             </div>
         </div>
