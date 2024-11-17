@@ -9,7 +9,6 @@ const Logout = () => {
   const handleLogout = async () => {
     await logout(); 
     localStorage.removeItem('token'); 
-    localStorage.removeItem('user_id'); 
     navigate('/'); 
   };
 

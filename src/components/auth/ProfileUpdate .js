@@ -56,7 +56,7 @@ const ProfileUpdate = () => {
     try {
       const updatedProfile = await updateProfile(data).unwrap();
       setMessage('Profile updated successfully!');
-      navigate('/profile', { state: { profile: updatedProfile } }); // Pass updated profile as state
+      navigate('/profile', { state: { profile: updatedProfile } });
     } catch (error) {
       setMessage(error.data?.error || 'Profile update failed.');
     }
@@ -66,28 +66,88 @@ const ProfileUpdate = () => {
   if (error) return <p>Error loading profile: {error.message}</p>;
 
   return (
-    <div className="container" style={{ marginTop: '70px', marginBottom: '10px' }}>
-      <h2 className="text-center mb-4">Update Profile</h2>
-      <div className="text-center mb-4">
-        {existingImageURL && (
+    <div style={{ 
+      maxWidth: '600px', 
+      margin: '40px auto', 
+      padding: '30px', 
+      backgroundColor: '#f8f9fa', 
+      borderRadius: '12px', 
+      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)' 
+    }}>
+      <h2 style={{ 
+        textAlign: 'center', 
+        fontSize: '2rem', 
+        color: '#343a40', 
+        marginBottom: '30px' 
+      }}>
+        Update Your Profile
+      </h2>
+
+      <div style={{
+        textAlign: 'center', 
+        marginBottom: '20px'
+      }}>
+        {existingImageURL ? (
           <img
             src={existingImageURL}
             alt="Profile"
-            className="rounded-circle"
-            style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+            style={{
+              width: '120px',
+              height: '120px',
+              objectFit: 'cover',
+              borderRadius: '50%',
+              border: '5px solid #007bff',
+              transition: 'all 0.3s ease-in-out',
+            }}
           />
+        ) : (
+          <div
+            style={{
+              width: '120px',
+              height: '120px',
+              backgroundColor: '#007bff',
+              borderRadius: '50%',
+              color: '#fff',
+              fontSize: '3rem',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              margin: '0 auto',
+            }}
+          >
+            <i className="fas fa-user" />
+          </div>
         )}
       </div>
-      <form onSubmit={handleSubmit} className="needs-validation" noValidate>
+
+      <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
         {Object.entries(formData).map(([key, value]) => (
-          <div className="mb-3" key={key}>
-            <label htmlFor={key} className="form-label">{key.replace('_', ' ').toUpperCase()}</label>
+          <div key={key} style={{ display: 'flex', flexDirection: 'column' }}>
+            <label
+              htmlFor={key}
+              style={{
+                display: 'block',
+                fontSize: '1rem',
+                color: '#495057',
+                marginBottom: '8px',
+                fontWeight: 'bold',
+              }}
+            >
+              {key.replace('_', ' ').toUpperCase()}
+            </label>
             {key === 'profile_image' ? (
               <input
                 type="file"
                 name={key}
                 id={key}
-                className="form-control"
+                style={{
+                  padding: '12px 15px',
+                  borderRadius: '8px',
+                  border: '2px solid #ced4da',
+                  backgroundColor: '#fff',
+                  transition: 'border-color 0.3s',
+                  width: '100%',
+                }}
                 onChange={handleChange}
                 accept="image/*"
               />
@@ -95,7 +155,14 @@ const ProfileUpdate = () => {
               <select
                 name={key}
                 id={key}
-                className="form-select"
+                style={{
+                  padding: '12px 15px',
+                  borderRadius: '8px',
+                  border: '2px solid #ced4da',
+                  backgroundColor: '#fff',
+                  transition: 'border-color 0.3s',
+                  width: '100%',
+                }}
                 value={value}
                 onChange={handleChange}
                 required
@@ -110,18 +177,52 @@ const ProfileUpdate = () => {
                 type={key === 'phone' ? 'tel' : 'text'}
                 name={key}
                 id={key}
-                className="form-control"
                 value={value}
                 onChange={handleChange}
+                style={{
+                  padding: '12px 15px',
+                  borderRadius: '8px',
+                  border: '2px solid #ced4da',
+                  backgroundColor: '#fff',
+                  transition: 'border-color 0.3s',
+                  width: '100%',
+                }}
                 required
               />
             )}
           </div>
         ))}
-        <div className="text-center">
-          <button type="submit" className="btn btn-primary w-100">Save Profile</button>
+        <div style={{
+          gridColumn: 'span 2',
+          textAlign: 'center'
+        }}>
+          <button
+            type="submit"
+            style={{
+              padding: '12px 25px',
+              backgroundColor: '#007bff',
+              color: '#fff',
+              fontSize: '1rem',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'background-color 0.3s',
+            }}
+          >
+            Save Profile
+          </button>
         </div>
-        {message && <p className="mt-3 text-success text-center">{message}</p>}
+        {message && (
+          <p style={{
+            marginTop: '20px',
+            color: '#28a745',
+            fontSize: '1.1rem',
+            fontWeight: 'bold',
+            textAlign: 'center',
+          }}>
+            {message}
+          </p>
+        )}
       </form>
     </div>
   );

@@ -6,12 +6,12 @@ const OrdersPage = () => {
 
   return (
     <div className="container" style={{ marginTop: '70px' }}>
-      <h1 className="text-center mb-4">Your Orders</h1>
+      <h1 className="text-center mb-4" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333' }}>Your Orders</h1>
 
       {isLoading && (
-        <div className="d-flex justify-content-center">
+        <div className="d-flex justify-content-center my-4">
           <div className="spinner-border text-primary" role="status">
-            <span className="sr-only">Loading...</span>
+            <span className="visually-hidden">Loading...</span>
           </div>
         </div>
       )}
@@ -32,7 +32,7 @@ const OrdersPage = () => {
       {/* Orders Table */}
       {orders?.length > 0 && (
         <div className="table-responsive">
-          <table className="table table-striped">
+          <table className="table table-striped table-hover">
             <thead>
               <tr>
                 <th scope="col">Order ID</th>
@@ -48,15 +48,11 @@ const OrdersPage = () => {
                   <td>{order.id}</td>
                   <td>{new Date(order.created_at).toLocaleDateString()}</td>
                   <td>
-                  <span className={
-                    `badge ${order.status === 'completed' ? 
-                    'badge-completed' : order.status === 'pending' ? 
-                    'badge-pending' : 'badge-canceled'}`
-                  }>
-                    {order.status}
-                  </span>
+                    <span className={`badge ${order.status === 'completed' ? 'bg-success' : order.status === 'pending' ? 'bg-warning' : 'bg-danger'}`}>
+                      {order.status}
+                    </span>
                   </td>
-                  <td>${order.total_price}</td>
+                  <td>${order.total_price.toFixed(2)}</td>
                   <td>
                     <a href={`/order/${order.id}`} className="btn btn-primary btn-sm">
                       View Details

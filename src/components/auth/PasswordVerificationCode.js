@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSendVerificationCodeMutation } from '../../features/auth/apiSlice';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const SendVerificationCode = () => {
   const [sendCode] = useSendVerificationCodeMutation();
@@ -34,6 +35,7 @@ const SendVerificationCode = () => {
       const response = await sendCode(email).unwrap();
       setMessage(response.message);
       localStorage.setItem('userEmail', response.email);
+      toast.success('Verification code sent successfully!');
       navigate('/reset-password');
     } catch (error) {
       console.error("Error:", error);
@@ -44,24 +46,40 @@ const SendVerificationCode = () => {
   };
 
   return (
-    <div className="container" style={{marginBottom: '360px'}}>
-      <h2 className="text-center mb-4">Send Verification Code</h2>
-      <form onSubmit={handleSubmit} className="needs-validation" noValidate>
-        <div className="mb-3">
-          <input
-            type="email"
-            className="form-control"
-            placeholder="Email"
-            value={email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary w-100" disabled={loading}>
-          {loading ? 'Sending...' : 'Send Verification Code'}
-        </button>
-        {message && <p className="mt-3 text-danger text-center">{message}</p>}
-      </form>
+    <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="container text-center" style={{ maxWidth: '400px' }}>
+        <h2 className="mb-4">Send Verification Code</h2>
+        <form onSubmit={handleSubmit} className="needs-validation" noValidate>
+          <div className="mb-3">
+            <input
+              type="email"
+              className="form-control"
+              placeholder="Email"
+              value={email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <button 
+            type="submit" 
+            className="btn btn-primary w-100 d-flex justify-content-center align-items-center" 
+            disabled={loading}
+            style={{ position: 'relative' }}
+          >
+            {loading ? (
+              <>
+                <div className="spinner-border text-light" role="status" style={{ width: '1.2rem', height: '1.2rem' }}>
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+                <span className="ms-2">Sending...</span>
+              </>
+            ) : (
+              'Submit'
+            )}
+          </button>
+          {message && <p className="mt-3 text-danger text-center">{message}</p>}
+        </form>
+      </div>
     </div>
   );
 };

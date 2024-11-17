@@ -41,6 +41,9 @@ const apiSlice = createApi({
       query: () => ({
         url: 'auth/logout/',
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // Add token
+        },
       }),
     }),
     sendVerificationCode: builder.mutation({

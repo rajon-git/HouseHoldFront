@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { useResetPasswordMutation } from '../../features/auth/apiSlice';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const ResetPassword = () => {
+  const navigate = useNavigate()
   const [resetPassword] = useResetPasswordMutation();
   const [formData, setFormData] = useState({
     code: '',
@@ -17,52 +20,68 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const email = localStorage.getItem('userEmail'); 
+    const email = localStorage.getItem('userEmail');
     setMessage('');
     setLoading(true);
 
     try {
-      // Spread formData to send it as part of the request
       const response = await resetPassword({ email, ...formData }).unwrap();
-      setMessage(response.message);
+      navigate('/login')
+      toast.success(response.message)
     } catch (error) {
-      setMessage(error.data?.error || 'Password reset failed.');
+      toast.error(error.data?.error || 'Password reset failed.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="container mt-5" style={{marginBottom: '307px'}}>
-      <h2 className="text-center mb-4">Reset Your Password</h2>
-      <form onSubmit={handleSubmit} className="needs-validation" noValidate>
-        <div className="mb-3">
-          <input
-            type="text"
-            name="code"
-            className="form-control"
-            placeholder="Verification Code"
-            value={formData.code}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <input
-            type="password"
-            name="new_password"
-            className="form-control"
-            placeholder="New Password"
-            value={formData.new_password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary w-100" disabled={loading}>
-          {loading ? 'Resetting...' : 'Reset Password'}
-        </button>
-        {message && <p className="mt-3 text-danger text-center">{message}</p>}
-      </form>
+    <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="container text-center" style={{ maxWidth: '400px' }}>
+        <h2 className="mb-4">Reset Your Password</h2>
+        <form onSubmit={handleSubmit} className="needs-validation" noValidate>
+          <div className="mb-3">
+            <input
+              type="text"
+              name="code"
+              className="form-control"
+              placeholder="Verification Code"
+              value={formData.code}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <input
+              type="password"
+              name="new_password"
+              className="form-control"
+              placeholder="New Password"
+              value={formData.new_password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <button 
+            type="submit" 
+            className="btn btn-primary w-100 d-flex justify-content-center align-items-center" 
+            disabled={loading}
+            style={{ position: 'relative' }}
+          >
+            {loading ? (
+              <>
+                <div className="spinner-border text-light" role="status" style={{ width: '1.2rem', height: '1.2rem' }}>
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+                <span className="ms-2">Resetting...</span>
+              </>
+            ) : (
+              'Reset Password'
+            )}
+          </button>
+          {message && <p className="mt-3 text-danger text-center">{message}</p>}
+        </form>
+      </div>
     </div>
   );
 };

@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 const Login = ({ handleLogin, refreshCart }) => {
   const navigate = useNavigate();
-  const [login] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation(); // Access `isLoading` state from the mutation hook
   const { refetch: refetchCart } = useGetCartQuery();
 
   const [credentials, setCredentials] = useState({
@@ -23,9 +23,6 @@ const Login = ({ handleLogin, refreshCart }) => {
     e.preventDefault();
     try {
       const response = await login(credentials).unwrap();
-      console.log('Login response:', response);
-  
-      localStorage.setItem('user_id', response.user.id);
       localStorage.setItem('token', response.token);
       toast.success('Welcome!');
       handleLogin();
@@ -38,41 +35,51 @@ const Login = ({ handleLogin, refreshCart }) => {
   };
 
   return (
-    <div className="container w-50" style={{ marginTop: '100px' }}>
-      <h2 className="text-center mb-4">Login</h2>
-      <form onSubmit={handleSubmit} className="needs-validation" noValidate>
-        <div className="mb-3">
-          <input
-            type="email"
-            name="email"
-            className="form-control"
-            placeholder="Email"
-            value={credentials.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <input
-            type="password"
-            name="password"
-            className="form-control"
-            placeholder="Password"
-            value={credentials.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="d-flex justify-content-between align-items-center">
-          <button type="submit" className="btn btn-primary w-45">
-            Login
+    <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="container text-center" style={{ maxWidth: '400px' }}>
+        <h2 className="mb-4">Login</h2>
+        <form onSubmit={handleSubmit} className="needs-validation" noValidate>
+          <div className="mb-3">
+            <input
+              type="email"
+              name="email"
+              className="form-control"
+              placeholder="Email"
+              value={credentials.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <input
+              type="password"
+              name="password"
+              className="form-control"
+              placeholder="Password"
+              value={credentials.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="btn btn-primary w-100 d-flex justify-content-center align-items-center"
+            disabled={isLoading} // Disable button when loading
+          >
+            {isLoading ? (
+              <div className="spinner-border text-light" role="status" style={{ width: '1.2rem', height: '1.2rem' }}>
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            ) : (
+              'Login'
+            )}
           </button>
-          <Link to="/send-verification-code" className="link-primary">
+          <Link to="/send-verification-code" className="d-block mt-3 link-primary">
             Forgot Password?
           </Link>
-        </div>
-        {message && <p className="mt-3 text-danger text-center">{message}</p>}
-      </form>
+          {message && <p className="mt-3 text-danger text-center">{message}</p>}
+        </form>
+      </div>
     </div>
   );
 };
