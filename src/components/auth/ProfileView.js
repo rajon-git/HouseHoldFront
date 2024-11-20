@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useGetProfileQuery } from '../../features/auth/apiSlice';
 import { Link, useLocation } from 'react-router-dom';
 import { FaEdit } from 'react-icons/fa';
+import Sidebar from '../dashboard/SideBar';
 
 const ProfileView = () => {
   const location = useLocation();
@@ -22,37 +23,8 @@ const ProfileView = () => {
 
   return (
     <div className="d-flex vh-100 bg-light">
-      {/* Sidebar */}
-      <div className="sidebar bg-gradient p-4" style={{ width: '250px', marginTop: '60px', height: '100vh', boxShadow: '2px 0 15px rgba(0, 0, 0, 0.1)' }}>
-        <h3 className="text-center text-black mb-4">Dashboard</h3>
-        <ul className="nav flex-column">
-  <li className="nav-item mb-3">
-    <Link
-      to="/orders"
-      className="text-black d-flex align-items-center text-decoration-none hover-bg-color"
-    >
-      <i className="fas fa-box me-2"></i> My Orders
-    </Link>
-  </li>
-  <li className="nav-item mb-3">
-    <Link
-      to="/profile"
-      className="text-black d-flex align-items-center text-decoration-none hover-bg-color"
-    >
-      <i className="fas fa-user me-2"></i> Profile
-    </Link>
-  </li>
-  <li className="nav-item mb-3">
-    <Link
-      to="/logout"
-      className="text-black d-flex align-items-center text-decoration-none hover-bg-color"
-    >
-      <i className="fas fa-sign-out-alt me-2"></i> Logout
-    </Link>
-  </li>
-</ul>
-
-      </div>
+     
+      <Sidebar/>
 
       {/* Main content */}
       <div className="container flex-grow-1 p-5">

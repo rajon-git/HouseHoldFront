@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useLoginMutation, useGetCartQuery } from '../../features/auth/apiSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
 
 const Login = ({ handleLogin, refreshCart }) => {
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation(); // Access `isLoading` state from the mutation hook
   const { refetch: refetchCart } = useGetCartQuery();
+  const dispatch = useDispatch();
 
   const [credentials, setCredentials] = useState({
     email: '',
@@ -24,6 +26,7 @@ const Login = ({ handleLogin, refreshCart }) => {
     try {
       const response = await login(credentials).unwrap();
       localStorage.setItem('token', response.token);
+      localStorage.setItem('user_id', response.user.id);
       toast.success('Welcome!');
       handleLogin();
       if (refreshCart) await refetchCart();

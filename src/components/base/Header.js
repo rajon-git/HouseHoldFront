@@ -1,15 +1,103 @@
+// import React, { useEffect, useState } from 'react';
+// import { Link } from 'react-router-dom';
+// import "../../App.css";
+// import { Dropdown } from 'react-bootstrap';
+// import { BsCartCheck } from "react-icons/bs";
+// import { useGetCartQuery } from '../../features/auth/apiSlice';
+// import { CgProfile } from "react-icons/cg";
+
+// export default function Header({ isAuthenticated }) {
+//   const [cartItemCount, setCartItemCount] = useState(0);
+//   const { data: cartData } = useGetCartQuery();
+
+//   useEffect(() => {
+//     if (cartData && cartData.items) {
+//       setCartItemCount(cartData?.items?.length);
+//     }
+//   }, [cartData]);
+//   const user = localStorage.getItem('user_id');
+
+// console.log(user?.username)
+//   return (
+//     <nav className="navbar navbar-expand-lg navbar-dark fixed-top">
+//       <div className="container-xxl">
+//         <Link className="navbar-brand" to="/">Brand</Link>
+//         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+//           <span className="navbar-toggler-icon"></span>
+//         </button>
+//         <div className="collapse navbar-collapse" id="navbarNav">
+//           <ul className="navbar-nav ms-auto">
+//             <li className="nav-item">
+//               <Link className="nav-link active" to="/">Home</Link>
+//             </li>
+//             <li className="nav-item">
+//               <Link className="nav-link" to="/services">Services</Link>
+//             </li>
+//             <li className="nav-item">
+//             {isAuthenticated ? (
+//             <Link to="/profile" className="nav-link text-white">
+//               <CgProfile style={{ fontSize: '1.5rem', color: 'white' }} />
+//             </Link>
+//           ) : (
+//             <div className="d-flex align-items-center">
+//               <Link to="/login" className="nav-link text-white fs-7">
+//                 Login
+//               </Link>
+//               <span className="text-white fs-5">|</span>
+//               <Link to="/register" className="nav-link text-white fs-7">
+//                 Register
+//               </Link>
+//             </div>
+//           )}
+//             </li>
+//             <li className="nav-item">
+//               <Link className="nav-link" to="/cart">
+//               <div style={{ position: 'relative', display: 'inline-block' }}>
+//                 <BsCartCheck style={{ fontSize: '1.5rem' }} />
+//                   {cartItemCount > 0 && (
+//                     <span
+//                       style={{
+//                         position: 'absolute',
+//                         top: '-10px',
+//                         right: '-10px',
+//                         backgroundColor: 'red',
+//                         color: 'white',
+//                         borderRadius: '50%',
+//                         padding: '0.2rem 0.5rem',
+//                         fontSize: '0.6rem',
+//                         fontWeight: 'bold',
+//                         display: 'flex',
+//                         alignItems: 'center',
+//                         justifyContent: 'center',
+//                       }}
+//                     >
+//                       {cartItemCount}
+//                     </span>
+//                   )}
+//                 </div>
+//               </Link>
+//             </li>
+//           </ul>
+//         </div>
+//       </div>
+//     </nav>
+//   );
+// };
+
+
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import "../../App.css";
 import { Dropdown } from 'react-bootstrap';
 import { BsCartCheck } from "react-icons/bs";
 import { useGetCartQuery } from '../../features/auth/apiSlice';
 import { CgProfile } from "react-icons/cg";
 
-export default function Header({ isAuthenticated, handleLogout }) {
+export default function Header({ isAuthenticated }) {
   const [cartItemCount, setCartItemCount] = useState(0);
-  
   const { data: cartData } = useGetCartQuery();
+  const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (cartData && cartData.items) {
@@ -17,14 +105,26 @@ export default function Header({ isAuthenticated, handleLogout }) {
     }
   }, [cartData]);
 
-  const user = localStorage.getItem('user_id');
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/services?search=${searchTerm.trim()}`);
+    }
+  };
 
-console.log(user?.username)
   return (
     <nav className="navbar navbar-expand-lg navbar-dark fixed-top">
       <div className="container-xxl">
         <Link className="navbar-brand" to="/">Brand</Link>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
@@ -36,30 +136,26 @@ console.log(user?.username)
               <Link className="nav-link" to="/services">Services</Link>
             </li>
             <li className="nav-item">
-              <Dropdown>
-                <Dropdown.Toggle className="nav-link" id="dropdown-basic" style={{ backgroundColor: 'transparent', border: 'none', color: '#ffffff' }}>
-                  <CgProfile style={{ fontSize: '1.5rem' }}/>
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  {isAuthenticated ? (
-                    <>
-                      <Dropdown.Item as={Link} to="/profile">Profile</Dropdown.Item>
-                      <Dropdown.Item as={Link} to="/orders">My Orders</Dropdown.Item>
-                      <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
-                    </>
-                  ) : (
-                    <>
-                      <Dropdown.Item as={Link} to="/login">Login</Dropdown.Item>
-                      <Dropdown.Item as={Link} to="/register">Register</Dropdown.Item>
-                    </>
-                  )}
-                </Dropdown.Menu>
-              </Dropdown>
+              {isAuthenticated ? (
+                <Link to="/profile" className="nav-link text-white">
+                  <CgProfile style={{ fontSize: '1.5rem', color: 'white' }} />
+                </Link>
+              ) : (
+                <div className="d-flex align-items-center">
+                  <Link to="/login" className="nav-link text-white fs-7">
+                    Login
+                  </Link>
+                  <span className="text-white fs-5">|</span>
+                  <Link to="/register" className="nav-link text-white fs-7">
+                    Register
+                  </Link>
+                </div>
+              )}
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/cart">
-              <div style={{ position: 'relative', display: 'inline-block' }}>
-                <BsCartCheck style={{ fontSize: '1.5rem' }} />
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                  <BsCartCheck style={{ fontSize: '1.5rem' }} />
                   {cartItemCount > 0 && (
                     <span
                       style={{
@@ -84,6 +180,18 @@ console.log(user?.username)
               </Link>
             </li>
           </ul>
+          <form className="d-flex ms-3" onSubmit={handleSearch}>
+            <input
+              type="text"
+              className="form-control me-2"
+              placeholder="Search services"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button className="btn btn-outline-light" type="submit">
+              Search
+            </button>
+          </form>
         </div>
       </div>
     </nav>

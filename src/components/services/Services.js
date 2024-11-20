@@ -17,6 +17,7 @@ const Services = () => {
     const [filters, setFilters] = useState({ categories: [], available: false });
     const [searchTerm, setSearchTerm] = useState('');
     const [sortOrder, setSortOrder] = useState('asc');
+    const searchQuery = queryParams.get('search') || '';
 
     const services = Array.isArray(serviceData.results) ? serviceData.results : [];
     const totalPages = Math.max(1, Math.ceil(serviceData.count / 8));
@@ -34,9 +35,9 @@ const Services = () => {
             );
         }
 
-        if (searchTerm) {
+        if (searchTerm || searchQuery) {
             updatedServices = updatedServices.filter(service =>
-                service.title.toLowerCase().includes(searchTerm.toLowerCase())
+                service.title.toLowerCase().includes((searchTerm || searchQuery).toLowerCase())
             );
         }
 
@@ -45,7 +46,7 @@ const Services = () => {
         );
 
         return updatedServices;
-    }, [filters, searchTerm, sortOrder]);
+    }, [filters, searchTerm,searchQuery, sortOrder]);
 
     useEffect(() => {
         if (Array.isArray(services)) {

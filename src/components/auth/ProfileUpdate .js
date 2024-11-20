@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useGetProfileQuery, useUpdateProfileMutation } from '../../features/auth/apiSlice';
 import { useNavigate } from 'react-router-dom';
+import Sidebar from '../dashboard/SideBar';
 
 const ProfileUpdate = () => {
   const { data: profile, error, isLoading } = useGetProfileQuery();
@@ -66,165 +67,114 @@ const ProfileUpdate = () => {
   if (error) return <p>Error loading profile: {error.message}</p>;
 
   return (
-    <div style={{ 
-      maxWidth: '600px', 
-      margin: '40px auto', 
-      padding: '30px', 
-      backgroundColor: '#f8f9fa', 
-      borderRadius: '12px', 
-      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)' 
-    }}>
-      <h2 style={{ 
-        textAlign: 'center', 
-        fontSize: '2rem', 
-        color: '#343a40', 
-        marginBottom: '30px' 
-      }}>
-        Update Your Profile
-      </h2>
-
-      <div style={{
-        textAlign: 'center', 
-        marginBottom: '20px'
-      }}>
-        {existingImageURL ? (
-          <img
-            src={existingImageURL}
-            alt="Profile"
-            style={{
-              width: '120px',
-              height: '120px',
-              objectFit: 'cover',
-              borderRadius: '50%',
-              border: '5px solid #007bff',
-              transition: 'all 0.3s ease-in-out',
-            }}
-          />
-        ) : (
-          <div
-            style={{
-              width: '120px',
-              height: '120px',
-              backgroundColor: '#007bff',
-              borderRadius: '50%',
-              color: '#fff',
-              fontSize: '3rem',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              margin: '0 auto',
-            }}
-          >
-            <i className="fas fa-user" />
+    <>
+    <div className="d-flex min-vh-100 bg-light">
+      <Sidebar/>
+      <div className="container flex-grow-1 p-5">
+        <div className="card shadow-lg p-4 border-0 rounded-4">
+          {/* Title */}
+          <div className="text-center mb-4">
+            <h2 className="fw-bold" style={{ fontSize: '2.5rem', color: '#4a4a4a' }}>
+              Update Your Profile
+            </h2>
           </div>
-        )}
-      </div>
 
-      <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-        {Object.entries(formData).map(([key, value]) => (
-          <div key={key} style={{ display: 'flex', flexDirection: 'column' }}>
-            <label
-              htmlFor={key}
-              style={{
-                display: 'block',
-                fontSize: '1rem',
-                color: '#495057',
-                marginBottom: '8px',
-                fontWeight: 'bold',
-              }}
-            >
-              {key.replace('_', ' ').toUpperCase()}
-            </label>
-            {key === 'profile_image' ? (
-              <input
-                type="file"
-                name={key}
-                id={key}
-                style={{
-                  padding: '12px 15px',
-                  borderRadius: '8px',
-                  border: '2px solid #ced4da',
-                  backgroundColor: '#fff',
-                  transition: 'border-color 0.3s',
-                  width: '100%',
-                }}
-                onChange={handleChange}
-                accept="image/*"
+          {/* Profile Image */}
+          <div className="text-center mb-4">
+            {existingImageURL ? (
+              <img
+                src={existingImageURL}
+                alt="Profile"
+                className="rounded-circle shadow-lg"
+                style={{ width: '160px', height: '160px', objectFit: 'cover', border: '5px solid #007bff' }}
               />
-            ) : key === 'gender' ? (
-              <select
-                name={key}
-                id={key}
-                style={{
-                  padding: '12px 15px',
-                  borderRadius: '8px',
-                  border: '2px solid #ced4da',
-                  backgroundColor: '#fff',
-                  transition: 'border-color 0.3s',
-                  width: '100%',
-                }}
-                value={value}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
             ) : (
-              <input
-                type={key === 'phone' ? 'tel' : 'text'}
-                name={key}
-                id={key}
-                value={value}
-                onChange={handleChange}
+              <div
+                className="d-flex justify-content-center align-items-center"
                 style={{
-                  padding: '12px 15px',
-                  borderRadius: '8px',
-                  border: '2px solid #ced4da',
-                  backgroundColor: '#fff',
-                  transition: 'border-color 0.3s',
-                  width: '100%',
+                  width: '160px',
+                  height: '160px',
+                  backgroundColor: '#007bff',
+                  borderRadius: '50%',
+                  border: '4px solid #ddd',
+                  color: '#fff',
+                  fontSize: '3rem',
                 }}
-                required
-              />
+              >
+                <i className="fas fa-user" />
+              </div>
             )}
           </div>
-        ))}
-        <div style={{
-          gridColumn: 'span 2',
-          textAlign: 'center'
-        }}>
-          <button
-            type="submit"
-            style={{
-              padding: '12px 25px',
-              backgroundColor: '#007bff',
-              color: '#fff',
-              fontSize: '1rem',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              transition: 'background-color 0.3s',
-            }}
-          >
-            Save Profile
-          </button>
+
+          {/* Form */}
+          <form className="row g-4" onSubmit={handleSubmit}>
+            {Object.entries(formData).map(([key, value]) => (
+              <div className="col-md-6" key={key}>
+                <label
+                  htmlFor={key}
+                  className="form-label"
+                  style={{ fontWeight: '500', color: '#555' }}
+                >
+                  {key.replace('_', ' ').toUpperCase()}
+                </label>
+                {key === 'profile_image' ? (
+                  <input
+                    type="file"
+                    name={key}
+                    id={key}
+                    className="form-control"
+                    onChange={handleChange}
+                    accept="image/*"
+                  />
+                ) : key === 'gender' ? (
+                  <select
+                    name={key}
+                    id={key}
+                    className="form-select"
+                    value={value}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                ) : (
+                  <input
+                    type={key === 'phone' ? 'tel' : 'text'}
+                    name={key}
+                    id={key}
+                    value={value}
+                    className="form-control"
+                    onChange={handleChange}
+                    required
+                  />
+                )}
+              </div>
+            ))}
+
+            {/* Submit Button */}
+            <div className="col-12 text-center">
+              <button
+                type="submit"
+                className="btn btn-primary btn-lg px-5"
+                style={{ borderRadius: '8px' }}
+              >
+                Save Profile
+              </button>
+            </div>
+
+            {/* Message */}
+            {message && (
+              <div className="col-12 text-center mt-3">
+                <p className="text-success fw-bold">{message}</p>
+              </div>
+            )}
+          </form>
         </div>
-        {message && (
-          <p style={{
-            marginTop: '20px',
-            color: '#28a745',
-            fontSize: '1.1rem',
-            fontWeight: 'bold',
-            textAlign: 'center',
-          }}>
-            {message}
-          </p>
-        )}
-      </form>
-    </div>
+      </div>
+
+    </div></>
   );
 };
 

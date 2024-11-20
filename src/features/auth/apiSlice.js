@@ -14,7 +14,7 @@ const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ["services", "service", "cart", "order"],
+  tagTypes: ["services", "service", "cart", "order","reviews","updateProfile"],
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (userData) => ({
@@ -41,9 +41,7 @@ const apiSlice = createApi({
       query: () => ({
         url: 'auth/logout/',
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // Add token
-        },
+        
       }),
     }),
     sendVerificationCode: builder.mutation({
@@ -66,10 +64,19 @@ const apiSlice = createApi({
         method: 'PUT',
         body: data,
       }),
+      invalidatesTags: ["updateProfile"],
     }),
     getProfile: builder.query({
       query: () => 'auth/profile/',
       method: 'GET', 
+      providesTags: ["updateProfile"]
+    }),
+    changePassword: builder.mutation({
+      query: (passwordData) => ({
+        url: 'auth/change-password/',
+        method: 'POST',
+        body: passwordData,
+      }),
     }),
     getCategories: builder.query({
       query: () => 'service/categories/',
@@ -89,10 +96,12 @@ const apiSlice = createApi({
         url: 'service/reviews/create/',
         method: 'POST',
         body: body 
-      })
+      }),
+      invalidatesTags: ["reviews"],
     }),
     getReviewsByService: builder.query({
-      query: (serviceId) => `/service/reviews/${serviceId}/`, 
+      query: (serviceId) => `/service/reviews/${serviceId}/`,
+      providesTags: ["reviews"] 
     }),
     getFeaturedServices: builder.query({ 
       query : () => 'service/featured/',
@@ -155,6 +164,14 @@ const apiSlice = createApi({
         method: 'POST',
       }),
     }),
+
+    getDiscountedServices: builder.query({
+      query: () => 'service/discounted/', 
+    }),
+
+    getRelatedServices: builder.query({
+      query: () => 'service/related/', 
+    }),
     
   }),
 });
@@ -181,7 +198,10 @@ export const {
   useClearCartMutation,
   useUserOrdersQuery,
   useCreateReviewMutation,
-  useGetReviewsByServiceQuery
+  useGetReviewsByServiceQuery,
+  useChangePasswordMutation,
+  useGetDiscountedServicesQuery,
+  useGetRelatedServicesQuery
 } = apiSlice;
 
 export default apiSlice;

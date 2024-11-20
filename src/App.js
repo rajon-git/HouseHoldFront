@@ -17,6 +17,7 @@ import ProtectedRoute from './components/middleware/ProtectedRoute';
 import Cart from './components/Order/Cart';
 import NotFound from './components/base/NotFound';
 import OrdersPage from './components/Order/OrdersPage';
+import ChangePassword from './components/auth/ChangePassword';
 
 
 const App = () => {
@@ -24,11 +25,6 @@ const App = () => {
 
   const handleLogin = () => {
     setIsAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token'); 
-    setIsAuthenticated(false);
   };
 
   useEffect(() => {
@@ -41,22 +37,23 @@ const App = () => {
   return (
     <Router>
       <div id="root">
-        <Header isAuthenticated={isAuthenticated} handleLogout={handleLogout}/>
+        <Header isAuthenticated={isAuthenticated}/>
         <main>
           <Routes>
-            <Route path="/" element={<Homepage isAuthenticated={isAuthenticated} handleLogout={handleLogout} />} />
+            <Route path="/" element={<Homepage isAuthenticated={isAuthenticated}/>} />
             <Route path="/login" element={<Login handleLogin={handleLogin} />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify-code" element={<VerifyCode />} />
             <Route path="/send-verification-code" element={<SendVerificationCode />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/profile" element={<ProtectedRoute isAuthenticated={isAuthenticated} element={<ProfileView />} />} />
+            <Route path="/change_password" element={<ChangePassword isAuthenticated={isAuthenticated} element={<ChangePassword />} />} />
             <Route path="/edit-profile" element={<ProtectedRoute isAuthenticated={isAuthenticated} element={<ProfileUpdate />} />} />
             <Route path="/services" element={<Services />} />
             <Route path="/services/:id" element={<ServiceDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/orders" element={<OrdersPage />} />
-            <Route path="*" element={<NotFound />} /> {/* Catch-all for 404 */}
+            <Route path="*" element={<NotFound />} /> 
           </Routes>
         </main>
         <Footer />

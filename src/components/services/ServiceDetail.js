@@ -102,74 +102,84 @@ const ServiceDetail = () => {
                 </div>
             </div>
 
-            <div className="mt-5">
-                <h3>Leave a Review</h3>
-                <form onSubmit={handleSubmit} className="review-form">
-                    <div className="star-rating mt-3">
-                        <p>Rate the service:</p><br />
-                        <div className="stars">
-                            {[...Array(5)].map((star, index) => {
-                                const currentRate = index + 1;
-                                return (
-                                    <FaStar
-                                        key={currentRate}
-                                        size={30}
-                                        color={currentRate <= (rateColor || rating) ? "yellow" : "grey"}
-                                        onClick={() => setRating(currentRate)}
-                                        style={{ cursor: "pointer", marginRight: "10px" }}
-                                    />
-                                );
-                            })}
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <textarea
-                            value={reviewText}
-                            onChange={(e) => setReviewText(e.target.value)}
-                            placeholder="Write your review here..."
-                            className="form-control"
-                            rows="2"
-                            required
-                        />
-                    </div>
-
-                    {errorMessage && <div className="alert alert-danger mt-2">{errorMessage}</div>}
-
-                    <button type="submit" className="btn btn-primary mt-3">
-                        Submit Review
-                    </button>
-                </form>
-
-                <div className='w-50'>
-                    <h3>Reviews for Service</h3>
-                    <ul className="list-group">
-                        {reviews && reviews?.map((review) => (
-                            <li key={review.id} className="list-group-item">
-                                <div className="d-flex justify-content-between">
-                                    <div>
-                                        {[...Array(5)].map((star, index) => {
-                                            return (
-                                                <FaStar
-                                                    key={index}
-                                                    size={15}
-                                                    color={index < review.rating ? "yellow" : "grey"}
-                                                    style={{ marginRight: "5px" }}
-                                                />
-                                            );
-                                        })}
-                                        <p>
-                                            {review?.user?.first_name} {review?.user?.last_name}
-                                        </p>
-                                    </div>
-                                    
-                                    <span>{new Date(review.created).toLocaleDateString()}</span>
+            <div className=" my-2">
+                <div className="row">
+                    <div className="col-md-6">
+                        
+                        <h3>Leave a Review</h3>
+                        <form onSubmit={handleSubmit} className="review-form">
+                            <div className="star-rating mt-3">
+                                <p>Rate the service:</p><br />
+                                <div className="stars">
+                                    {[...Array(5)].map((star, index) => {
+                                        const currentRate = index + 1;
+                                        return (
+                                            <FaStar
+                                                key={currentRate}
+                                                size={30}
+                                                color={currentRate <= (rateColor || rating) ? "yellow" : "grey"}
+                                                onClick={() => setRating(currentRate)}
+                                                style={{ cursor: "pointer", marginRight: "10px" }}
+                                            />
+                                        );
+                                    })}
                                 </div>
-                                <p>{review?.comment}</p>
-                            </li>
-                        ))}
-                    </ul>
+                            </div>
+                            <div className="form-group">
+                                <textarea
+                                    value={reviewText}
+                                    onChange={(e) => setReviewText(e.target.value)}
+                                    placeholder="Write your review here..."
+                                    className="form-control"
+                                    rows="2"
+                                    required
+                                />
+                            </div>
+
+                            {errorMessage && <div className="alert alert-danger mt-2">{errorMessage}</div>}
+
+                            <button type="submit" className="btn btn-primary mt-3">
+                                Submit Review
+                            </button>
+                        </form>
+
+                        <div className=''>
+                            <h3>Reviews for Service</h3>
+                            <ul className="list-group">
+                                {reviews && reviews?.map((review) => (
+                                    <li key={review.id} className="list-group-item">
+                                        <div className="d-flex justify-content-between">
+                                            <div>
+                                                {[...Array(5)].map((star, index) => {
+                                                    return (
+                                                        <FaStar
+                                                            key={index}
+                                                            size={15}
+                                                            color={index < review.rating ? "yellow" : "grey"}
+                                                            style={{ marginRight: "5px" }}
+                                                        />
+                                                    );
+                                                })}
+                                                <p>
+                                                    {review?.user?.first_name} {review?.user?.last_name}
+                                                </p>
+                                            </div>
+                                            
+                                            <span>{new Date(review.created).toLocaleDateString()}</span>
+                                        </div>
+                                        <p>{review?.comment}</p>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        
+                    </div>
+                    <div className="col-md-6">
+                        Hello
+                    </div>
                 </div>
             </div>
+            
         </div>
     );
 };

@@ -12,7 +12,6 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 export default function Cart() {
-  // const cartItems = useSelector(state => state.cart.items);
   const session_key = localStorage.getItem('session_key');
   const { data: cart, isLoading, isError, error, refetch } = useGetCartQuery(session_key);
   const [clearCart] = useClearCartMutation();
@@ -79,7 +78,7 @@ export default function Cart() {
       toast.error('Failed to increase quantity.');
     }
   };
-  
+
   const handleDecrement = async (itemId) => {
     try {
       await decrementCartItem(itemId).unwrap();
@@ -89,7 +88,6 @@ export default function Cart() {
       toast.error('Failed to decrease quantity.');
     }
   };
-  
 
   const handleSubmit = async () => {
     const orderData = {
@@ -105,7 +103,7 @@ export default function Cart() {
       ward: address.ward,
       city: address.city,
       state: address.state,
-      payment_type: paymentType, // Include selected payment type
+      payment_type: paymentType,
     };
 
     try {
@@ -118,11 +116,18 @@ export default function Cart() {
     }
   };
 
+  // Calculate total service fees, ensuring it's a valid number
   const totalServiceFees = cart?.items?.reduce((total, item) => {
-    return total + (item.service?.service_fee || 0) * item.quantity;
-  }, 0).toFixed(2);
+    const serviceFee = item.service?.service_fee || 0;
+    return total + (serviceFee * item.quantity);
+  }, 0);
 
-  if (isLoading) return <p>Loading...</p>;
+
+  if (isLoading) return (
+    <div className="spinner-border text-light" role="status" style={{ width: '1.2rem', height: '1.2rem' }}>
+                <span className="visually-hidden">Loading...</span>
+              </div>
+  );
 
   if (isError) {
     const errorMessage =
@@ -180,7 +185,7 @@ export default function Cart() {
                         </button>
                       </td>
 
-                      <td>${(item.service?.service_fee || 0).toFixed(2)}</td>
+                      <td>${(item.service?.service_fee || 0)}</td>
                       <td>
                         <button
                           className="btn btn-danger btn-sm"
@@ -189,7 +194,6 @@ export default function Cart() {
                           Remove
                         </button>
                       </td>
-                      
                     </tr>
                   ))}
                   {cart.items.length > 0 && (
@@ -272,7 +276,7 @@ export default function Cart() {
                       type="text"
                       id="ward"
                       className="form-control"
-                      placeholder="Enter ward number"
+                      placeholder="Ward"
                       value={address.ward}
                       onChange={handleInputChange}
                       required
@@ -283,7 +287,7 @@ export default function Cart() {
                       type="text"
                       id="city"
                       className="form-control"
-                      placeholder="Enter city"
+                      placeholder="Enter your city"
                       value={address.city}
                       onChange={handleInputChange}
                       required
@@ -295,45 +299,43 @@ export default function Cart() {
                     type="text"
                     id="state"
                     className="form-control"
-                    placeholder="Enter state"
+                    placeholder="State"
                     value={address.state}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
-                
-                <div className="mb-3">
-                  <label className="form-label">Payment Type</label>
-                  <div>
-                    <label>
-                      <input
-                        type="radio"
-                        name="payment_type"
-                        value="cash"
-                        checked={paymentType === 'cash'}
-                        onChange={handlePaymentTypeChange}
-                      />
-                      Cash
-                    </label>
-                    <label className="ms-3">
-                      <input
-                        type="radio"
-                        name="payment_type"
-                        value="bkash"
-                        checked={paymentType === 'bkash'}
-                        onChange={handlePaymentTypeChange}
-                      />
-                      Bkash
-                    </label>
-                  </div>
+                <hr />
+                <h6 className="text-muted mb-3">Payment Method</h6>
+                <div>
+                  <label>
+                    <input
+                      type="radio"
+                      value="cash"
+                      checked={paymentType === 'cash'}
+                      onChange={handlePaymentTypeChange}
+                    />
+                    Cash on Delivery
+                  </label>
                 </div>
-
+                <div>
+                  <label>
+                    <input
+                      type="radio"
+                      value="credit"
+                      checked={paymentType === 'credit'}
+                      onChange={handlePaymentTypeChange}
+                    />
+                    Credit Card
+                  </label>
+                </div>
                 <button
+                  type="button"
                   onClick={handleSubmit}
+                  className="btn btn-primary btn-lg w-100 mt-3"
                   disabled={isOrderLoading}
-                  className="btn btn-success btn-lg w-100 mt-3"
                 >
-                  Proceed to Checkout
+                  {isOrderLoading ? 'Placing Order...' : 'Place Order'}
                 </button>
               </form>
             </div>
