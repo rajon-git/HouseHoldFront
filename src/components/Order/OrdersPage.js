@@ -69,7 +69,7 @@ const OrdersPage = () => {
                       <td>${order.total_price}</td>
                       <td>
                         <a
-                          href={`/order/${order.id}`}
+                          href={`/orders/${order.id}`}
                           className="btn btn-primary btn-sm"
                         >
                           View Details

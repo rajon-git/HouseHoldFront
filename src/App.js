@@ -18,6 +18,7 @@ import Cart from './components/Order/Cart';
 import NotFound from './components/base/NotFound';
 import OrdersPage from './components/Order/OrdersPage';
 import ChangePassword from './components/auth/ChangePassword';
+import OrderDetailsPage from './components/Order/OrderDetailsPage';
 
 
 const App = () => {
@@ -53,6 +54,7 @@ const App = () => {
             <Route path="/services/:id" element={<ServiceDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
             <Route path="*" element={<NotFound />} /> 
           </Routes>
         </main>

@@ -21,7 +21,6 @@ export default function Cart() {
   const [incrementCartItem] = useIncrementCartItemMutation();
   const [decrementCartItem] = useDecrementCartItemMutation();
 
-  // State for address form and payment method
   const [address, setAddress] = useState({
     name: '',
     phone: '',
@@ -72,7 +71,7 @@ export default function Cart() {
   const handleIncrement = async (itemId) => {
     try {
       await incrementCartItem(itemId).unwrap();
-      refetch(); // Refetch cart to update the quantity after the increment
+      refetch(); 
       toast.success('Quantity increased!');
     } catch (error) {
       toast.error('Failed to increase quantity.');
@@ -82,7 +81,7 @@ export default function Cart() {
   const handleDecrement = async (itemId) => {
     try {
       await decrementCartItem(itemId).unwrap();
-      refetch(); // Refetch cart to update the quantity after the decrement
+      refetch(); 
       toast.success('Quantity decreased!');
     } catch (error) {
       toast.error('Failed to decrease quantity.');
@@ -116,7 +115,6 @@ export default function Cart() {
     }
   };
 
-  // Calculate total service fees, ensuring it's a valid number
   const totalServiceFees = cart?.items?.reduce((total, item) => {
     const serviceFee = item.service?.service_fee || 0;
     return total + (serviceFee * item.quantity);
@@ -125,8 +123,8 @@ export default function Cart() {
 
   if (isLoading) return (
     <div className="spinner-border text-light" role="status" style={{ width: '1.2rem', height: '1.2rem' }}>
-                <span className="visually-hidden">Loading...</span>
-              </div>
+      <span className="visually-hidden">Loading...</span>
+    </div>
   );
 
   if (isError) {
