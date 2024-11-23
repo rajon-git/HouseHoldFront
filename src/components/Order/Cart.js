@@ -183,7 +183,7 @@ export default function Cart() {
                         </button>
                       </td>
 
-                      <td>${(item.service?.service_fee || 0)}</td>
+                      <td>{(item.service?.service_fee || 0)} BDT</td>
                       <td>
                         <button
                           className="btn btn-danger btn-sm"
@@ -217,7 +217,7 @@ export default function Cart() {
           <div className="card shadow-sm border-0">
             <div className="card-body">
               <p className="card-text fs-4 fw-bold text-dark">
-                Total Service Fees: ${totalServiceFees}
+                Total Service Fees: {totalServiceFees} BDT
               </p>
               <hr />
               <h6 className="text-muted mb-3">Address Details</h6>

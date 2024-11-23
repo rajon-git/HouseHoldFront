@@ -176,6 +176,10 @@ const apiSlice = createApi({
     getOrderDetails: builder.query({
       query: (orderId) => `order/${orderId}/`,
     }),
+
+    getRelatedService: builder.query({
+      query: (service_id) => `service/related-products/${service_id}/`,
+    }),
     
   }),
 });
@@ -206,7 +210,8 @@ export const {
   useChangePasswordMutation,
   useGetDiscountedServicesQuery,
   useGetRelatedServicesQuery,
-  useGetOrderDetailsQuery
+  useGetOrderDetailsQuery,
+  useGetRelatedServiceQuery
 } = apiSlice;
 
 export default apiSlice;

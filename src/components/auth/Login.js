@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 
 const Login = ({ handleLogin, refreshCart }) => {
   const navigate = useNavigate();
-  const [login, { isLoading }] = useLoginMutation(); // Access `isLoading` state from the mutation hook
+  const [login, { isLoading }] = useLoginMutation(); 
   const { refetch: refetchCart } = useGetCartQuery();
   const dispatch = useDispatch();
 
@@ -67,7 +67,7 @@ const Login = ({ handleLogin, refreshCart }) => {
           <button
             type="submit"
             className="btn btn-primary w-100 d-flex justify-content-center align-items-center"
-            disabled={isLoading} // Disable button when loading
+            disabled={isLoading} 
           >
             {isLoading ? (
               <div className="spinner-border text-light" role="status" style={{ width: '1.2rem', height: '1.2rem' }}>

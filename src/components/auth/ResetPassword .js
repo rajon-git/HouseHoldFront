@@ -27,6 +27,7 @@ const ResetPassword = () => {
     try {
       const response = await resetPassword({ email, ...formData }).unwrap();
       navigate('/login')
+      localStorage.removeItem('userEmail');
       toast.success(response.message)
     } catch (error) {
       toast.error(error.data?.error || 'Password reset failed.');

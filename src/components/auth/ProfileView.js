@@ -26,7 +26,7 @@ const ProfileView = () => {
      
       <Sidebar/>
 
-      {/* Main content */}
+    
       <div className="container flex-grow-1 p-5">
         <div className="card shadow-lg p-4 border-0 rounded-4">
           <div className="text-center mb-4">
@@ -35,7 +35,7 @@ const ProfileView = () => {
             </h2>
           </div>
 
-          {/* Profile Image */}
+         
           <div className="text-center mb-4">
             {existingImageURL ? (
               <img
@@ -51,14 +51,13 @@ const ProfileView = () => {
             )}
           </div>
 
-          {/* Edit Profile Button */}
+         
           <div className="text-end mb-3">
             <Link to="/edit-profile" className="btn btn-outline-primary btn-lg px-4">
               <FaEdit /> Edit Profile
             </Link>
           </div>
 
-          {/* Profile Information */}
           <div className="row">
             <div className="col-md-6 mb-3">
               <div className="d-flex align-items-center">

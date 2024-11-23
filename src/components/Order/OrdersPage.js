@@ -66,7 +66,7 @@ const OrdersPage = () => {
                           {order.status}
                         </span>
                       </td>
-                      <td>${order.total_price}</td>
+                      <td>{order.total_price} BDT</td>
                       <td>
                         <a
                           href={`/orders/${order.id}`}

@@ -72,14 +72,14 @@ const ProfileUpdate = () => {
       <Sidebar/>
       <div className="container flex-grow-1 p-5">
         <div className="card shadow-lg p-4 border-0 rounded-4">
-          {/* Title */}
+         
           <div className="text-center mb-4">
             <h2 className="fw-bold" style={{ fontSize: '2.5rem', color: '#4a4a4a' }}>
               Update Your Profile
             </h2>
           </div>
 
-          {/* Profile Image */}
+          
           <div className="text-center mb-4">
             {existingImageURL ? (
               <img
@@ -106,7 +106,7 @@ const ProfileUpdate = () => {
             )}
           </div>
 
-          {/* Form */}
+         
           <form className="row g-4" onSubmit={handleSubmit}>
             {Object.entries(formData).map(([key, value]) => (
               <div className="col-md-6" key={key}>
@@ -153,7 +153,7 @@ const ProfileUpdate = () => {
               </div>
             ))}
 
-            {/* Submit Button */}
+            
             <div className="col-12 text-center">
               <button
                 type="submit"
@@ -164,7 +164,7 @@ const ProfileUpdate = () => {
               </button>
             </div>
 
-            {/* Message */}
+          
             {message && (
               <div className="col-12 text-center mt-3">
                 <p className="text-success fw-bold">{message}</p>

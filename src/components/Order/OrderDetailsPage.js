@@ -13,7 +13,7 @@ const OrderDetailsPage = () => {
     <div className="invoice-container">
       <header className="invoice-header">
         <div className="invoice-logo">
-          <h1>Company</h1>
+          <h1>Household</h1>
         </div>
         <div className="invoice-info">
           <h2>Invoice</h2>
@@ -52,9 +52,9 @@ const OrderDetailsPage = () => {
               {order?.items?.map((item) => (
                 <tr key={item.id}>
                   <td>{item?.service?.name}</td>
-                  <td>${item.service.service_fee}</td>
+                  <td>{item.service.service_fee} BDT</td>
                   <td>{item.quantity}</td>
-                  <td>${(item.service.service_fee * item.quantity)}</td>
+                  <td>{(item.service.service_fee * item.quantity)} BDT</td>
                 </tr>
               ))}
             </tbody>
@@ -63,7 +63,7 @@ const OrderDetailsPage = () => {
 
         <div className="card order-summary">
           <h3>Order Summary</h3>
-          <p><strong>Total Price:</strong> ${order.total_price}</p>
+          <p><strong>Total Price:</strong> {order.total_price} BDT</p>
         </div>
       </section>
 

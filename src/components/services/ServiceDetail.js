@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useAddCartItemMutation, useCreateReviewMutation, useGetReviewsByServiceQuery, useGetServiceQuery } from '../../features/auth/apiSlice';
+import { useAddCartItemMutation, useCreateReviewMutation, useGetRelatedServiceQuery, useGetReviewsByServiceQuery, useGetServiceQuery } from '../../features/auth/apiSlice';
 import '../../App.css';
 import toast from 'react-hot-toast';
 import { FaStar } from 'react-icons/fa';
@@ -10,6 +10,8 @@ const ServiceDetail = () => {
     const { id } = useParams();
     const { data: service, isLoading, isError, error } = useGetServiceQuery(id);
     const { data: reviews } = useGetReviewsByServiceQuery(id);
+    const {data:relatedService} = useGetRelatedServiceQuery(id);
+
 
     const [reviewText, setReviewText] = useState('');
     const [rating, setRating] = useState(0);
@@ -42,7 +44,6 @@ const ServiceDetail = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate review text and rating before submission
         if (!reviewText || rating <= 0) {
             setErrorMessage('Please enter both a review and a rating.');
             return;
@@ -58,7 +59,7 @@ const ServiceDetail = () => {
             await createReview(reviewData).unwrap();
             toast.success('Review submitted successfully!');
             setReviewText('');
-            setRating(0); // Reset rating after submission
+            setRating(0); 
         } catch (error) {
             toast.error('Login required');
             navigate("/login")
@@ -90,7 +91,7 @@ const ServiceDetail = () => {
                     <h5>Description</h5>
                     <p>{service?.description}</p>
                     <h5>Service Fee</h5>
-                    <p>${service?.service_fee}</p>
+                    <p>{service?.service_fee} BDT</p>
                     <h5>Availability</h5>
                     <p>{service?.is_available ? "Available" : "Not Available"}</p>
                     <button className="btn btn-primary mt-3" onClick={handleAddToCart}>Add to cart</button>
@@ -106,7 +107,7 @@ const ServiceDetail = () => {
                 <div className="row">
                     <div className="col-md-6">
                         
-                        <h3>Leave a Review</h3>
+                        <h3 className='text-primary'>Leave a Review</h3>
                         <form onSubmit={handleSubmit} className="review-form">
                             <div className="star-rating mt-3">
                                 <p>Rate the service:</p><br />
@@ -144,7 +145,7 @@ const ServiceDetail = () => {
                         </form>
 
                         <div className=''>
-                            <h3>Reviews for Service</h3>
+                            <h3 className='text-primary'>Reviews for Service</h3>
                             <ul className="list-group">
                                 {reviews && reviews?.map((review) => (
                                     <li key={review.id} className="list-group-item">
@@ -175,8 +176,33 @@ const ServiceDetail = () => {
                         
                     </div>
                     <div className="col-md-6">
-                        Hello
+                        <h3 className="text-primary">Related Services</h3>
+                        {relatedService?.length > 0 ? (
+                            <div className="row">
+                                {relatedService?.map((item, index) => (
+                                    <div className="col-md-6" key={item.id}>
+                                        <div className="card" style={{ width: '18rem', marginBottom: '15px' }}>
+                                            <img 
+                                                className="card-img-top" 
+                                                src={`${process.env.REACT_APP_BACKEND_URL}${item?.image}`}
+                                               
+                                                alt={item?.title} />
+                                            <div className="card-body">
+                                                <h5 className="card-title">{item?.title}</h5>
+                                                <Link to={`/services/${item?.id}`} className="btn btn-primary">
+                                                    View Service
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p>No related services found.</p>
+                        )}
                     </div>
+
+
                 </div>
             </div>
             
