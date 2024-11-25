@@ -12,6 +12,8 @@ const ServiceDetail = () => {
     const { data: reviews } = useGetReviewsByServiceQuery(id);
     const {data:relatedService} = useGetRelatedServiceQuery(id);
 
+    console.log(service)
+
 
     const [reviewText, setReviewText] = useState('');
     const [rating, setRating] = useState(0);
