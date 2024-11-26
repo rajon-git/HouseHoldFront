@@ -2,6 +2,7 @@
   "name": "house-hold-front",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://householdserviceapi.onrender.com",
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.7",
     "@testing-library/jest-dom": "^5.17.0",
@@ -43,6 +44,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "proxy": "https://householdserviceapi.onrender.com"
+  }
+  
 }
