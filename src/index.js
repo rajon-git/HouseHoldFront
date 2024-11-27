@@ -13,7 +13,19 @@ root.render(
 
   <Provider store={store}>
     <App />
-    <Toaster/>
+    <Toaster
+      position="top-right"
+      toastOptions={{
+        success: {
+          duration: 3000,
+          style: { background: 'green', color: 'white' },
+        },
+        error: {
+          duration: 5000,
+          style: { background: 'red', color: 'white' },
+        },
+      }}
+    />
   </Provider>
  
 );

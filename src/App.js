@@ -53,8 +53,8 @@ const App = () => {
             <Route path="/services" element={<Services />} />
             <Route path="/services/:id" element={<ServiceDetail />} />
             <Route path="/cart" element={<Cart />} />
-            <Route path="/user-orders" element={<OrdersPage />} />
-            <Route path="/order-detail/:orderId" element={<OrderDetailsPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
             <Route path="*" element={<NotFound />} /> 
           </Routes>
         </main>
