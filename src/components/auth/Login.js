@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import { useLoginMutation, useGetCartQuery } from '../../features/auth/apiSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
 
 const Login = ({ handleLogin, refreshCart }) => {
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation(); 
   const { refetch: refetchCart } = useGetCartQuery();
-  const dispatch = useDispatch();
 
   const [credentials, setCredentials] = useState({
     email: '',
@@ -30,6 +28,10 @@ const Login = ({ handleLogin, refreshCart }) => {
       toast.success('Welcome!');
       handleLogin();
       if (refreshCart) await refetchCart();
+      // Remove sessionid from cookies
+      document.cookie = "sessionid=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+      // Remove session_key from sessionStorage
+      sessionStorage.removeItem('session_key');
       navigate('/profile');
     } catch (error) {
       console.error('Login error:', error);
