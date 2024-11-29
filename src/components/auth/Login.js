@@ -25,13 +25,12 @@ const Login = ({ handleLogin, refreshCart }) => {
       const response = await login(credentials).unwrap();
       localStorage.setItem('token', response.token);
       localStorage.setItem('user_id', response.user.id);
-      toast.success('Welcome!');
-      handleLogin();
-      if (refreshCart) await refetchCart();
-      // Remove sessionid from cookies
-      document.cookie = "sessionid=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-      // Remove session_key from sessionStorage
       sessionStorage.removeItem('session_key');
+      if (refreshCart) await refetchCart();
+      
+      handleLogin();
+      toast.success('Welcome!');
+      // if (refreshCart) await refetchCart();
       navigate('/profile');
     } catch (error) {
       console.error('Login error:', error);

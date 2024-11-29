@@ -6,7 +6,7 @@ import Sidebar from '../dashboard/SideBar';
 
 const ProfileView = () => {
   const location = useLocation();
-  const { data: profile, error, isLoading } = useGetProfileQuery();
+  const { data: profile,refetch, error, isLoading } = useGetProfileQuery();
   const [existingImageURL, setExistingImageURL] = useState('');
 
   useEffect(() => {
@@ -17,6 +17,10 @@ const ProfileView = () => {
       setExistingImageURL(profile.profile_image); 
     }
   }, [location.state, profile]);
+
+  useEffect(() => {
+    refetch(); // This will refetch the profile data when the component mounts
+  }, [refetch]);
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error loading profile: {error.message}</p>;

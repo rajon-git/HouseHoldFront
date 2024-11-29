@@ -30,6 +30,7 @@ const apiSlice = createApi({
         method: 'POST',
         body: credentials,
       }),
+      providesTags: ["cart"], 
     }),
     verifyCode: builder.mutation({
       query: (data) => ({
@@ -69,8 +70,7 @@ const apiSlice = createApi({
     }),
     getProfile: builder.query({
       query: () => 'auth/profile/',
-      method: 'GET', 
-      providesTags: ["updateProfile"]
+      providesTags: ["updateProfile", "cart"], 
     }),
     changePassword: builder.mutation({
       query: (passwordData) => ({
@@ -122,7 +122,6 @@ const apiSlice = createApi({
     getCart: builder.query({
       query: () => 'cart/',
       providesTags: ["cart"],
-      
     }),
     deleteCartItem: builder.mutation({
       query: (id) => ({

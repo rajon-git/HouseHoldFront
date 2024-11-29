@@ -1,6 +1,7 @@
 import React from 'react';
 import { useUserOrdersQuery } from '../../features/auth/apiSlice';
 import Sidebar from '../dashboard/SideBar';
+import { Link } from 'react-router-dom';
 
 const OrdersPage = () => {
   const { data: orders, error, isLoading } = useUserOrdersQuery();
@@ -68,12 +69,12 @@ const OrdersPage = () => {
                       </td>
                       <td>{order.total_price} BDT</td>
                       <td>
-                        <a
-                          href={`/orders/${order.id}`}
-                          className="btn btn-primary btn-sm"
-                        >
-                          View Details
-                        </a>
+                      <Link
+                        to={`/orders/${order.id}`}
+                        className="btn btn-primary btn-sm"
+                      >
+                        View Details
+                      </Link>
                       </td>
                     </tr>
                   ))}

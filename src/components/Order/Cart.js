@@ -9,7 +9,6 @@ import {
   useIncrementCartItemMutation,
 } from '../../features/auth/apiSlice';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 
 export default function Cart() {
   const session_key = localStorage.getItem('session_key');
