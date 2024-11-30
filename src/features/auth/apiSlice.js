@@ -15,7 +15,7 @@ const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ["services", "service", "cart", "order","reviews","updateProfile"],
+  tagTypes: ["services", "service", "cart", "order","reviews","updateProfile","loginCart","inCart","dCart","cCart","LogOut"],
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (userData) => ({
@@ -30,7 +30,8 @@ const apiSlice = createApi({
         method: 'POST',
         body: credentials,
       }),
-      providesTags: ["cart"], 
+      invalidatesTags: ["loginCart"], 
+      providesTags: ["LogOut"],
     }),
     verifyCode: builder.mutation({
       query: (data) => ({
@@ -45,6 +46,7 @@ const apiSlice = createApi({
         method: 'POST',
         
       }),
+      invalidatesTags: ["LogOut"], 
     }),
     sendVerificationCode: builder.mutation({
       query: (email) => ({
@@ -70,7 +72,7 @@ const apiSlice = createApi({
     }),
     getProfile: builder.query({
       query: () => 'auth/profile/',
-      providesTags: ["updateProfile", "cart"], 
+      providesTags: ["updateProfile", "cart","LogOut"], 
     }),
     changePassword: builder.mutation({
       query: (passwordData) => ({
@@ -121,7 +123,9 @@ const apiSlice = createApi({
     }),
     getCart: builder.query({
       query: () => 'cart/',
-      providesTags: ["cart"],
+      providesTags: ["cart","loginCart","dCart","inCart"],
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true
     }),
     deleteCartItem: builder.mutation({
       query: (id) => ({
@@ -156,6 +160,7 @@ const apiSlice = createApi({
         url: `/cart/${itemId}/increment/`,
         method: 'POST',
       }),
+      invalidatesTags: ["inCart"],
     }),
 
     decrementCartItem: builder.mutation({
@@ -163,6 +168,7 @@ const apiSlice = createApi({
         url: `/cart/${itemId}/decrement/`,
         method: 'POST',
       }),
+      invalidatesTags: ["dCart"],
     }),
 
     getDiscountedServices: builder.query({

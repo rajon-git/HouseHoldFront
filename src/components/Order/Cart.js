@@ -134,6 +134,8 @@ export default function Cart() {
     return <p className="text-center">{errorMessage}</p>;
   }
 
+  
+
   return (
     <div className="container-xxl" style={{ marginTop: '100px' }}>
       <h1 className="mb-4 text-center">Service Cart</h1>

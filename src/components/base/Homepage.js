@@ -5,11 +5,11 @@ import { useGetFeaturedServicesQuery } from '../../features/auth/apiSlice';
 import Service from '../services/Service';
 import Spinner from 'react-bootstrap/Spinner';
 
-export default function Homepage({ isAuthenticated, handleLogout }) {
+export default function Homepage({ isAuthenticated }) {
   const { data: servicesData, isError, isLoading, error } = useGetFeaturedServicesQuery(); 
   return (
     <div>
-      <Header isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
+      <Header isAuthenticated={isAuthenticated} />
       <HeroPage />
       <div className="container-xxl mt-5">
         <h2 className="text-center mb-4">Our Featured Services</h2>

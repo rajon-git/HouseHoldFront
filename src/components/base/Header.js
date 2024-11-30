@@ -7,13 +7,24 @@ import { CgProfile } from "react-icons/cg";
 
 export default function Header({ isAuthenticated }) {
   const [cartItemCount, setCartItemCount] = useState(0);
-  const { data: cartData } = useGetCartQuery();
+  const { data: cartData, refetch  } = useGetCartQuery();
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (cartData && cartData.items) {
-      setCartItemCount(cartData?.items?.length);
+    if (isAuthenticated) {
+      refetch();
+    }
+  }, [isAuthenticated, refetch]);
+
+  useEffect(() => {
+    if (cartData) {
+      if (cartData.total_items !== undefined) {
+        setCartItemCount(cartData.total_items); 
+      } else if (cartData.items) {
+        const count = cartData.items.reduce((sum, item) => sum + item.quantity, 0);
+        setCartItemCount(count);
+      }
     }
   }, [cartData]);
 
