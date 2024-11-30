@@ -5,9 +5,9 @@ import { BsCartCheck } from "react-icons/bs";
 import { useGetCartQuery } from '../../features/auth/apiSlice';
 import { CgProfile } from "react-icons/cg";
 
-export default function Header({ isAuthenticated }) {
+export default function Header({ isAuthenticated, onLogin }) {
   const [cartItemCount, setCartItemCount] = useState(0);
-  const { data: cartData, refetch  } = useGetCartQuery();
+  const { data: cartData, refetch } = useGetCartQuery();
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
@@ -19,12 +19,12 @@ export default function Header({ isAuthenticated }) {
 
   useEffect(() => {
     if (cartData) {
-      if (cartData.total_items !== undefined) {
-        setCartItemCount(cartData.total_items); 
-      } else if (cartData.items) {
-        const count = cartData.items.reduce((sum, item) => sum + item.quantity, 0);
-        setCartItemCount(count);
-      }
+      const totalItems =
+        cartData.total_items !== undefined
+          ? cartData.total_items
+          : cartData.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+
+      setCartItemCount(totalItems);
     }
   }, [cartData]);
 
@@ -52,7 +52,6 @@ export default function Header({ isAuthenticated }) {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
-            
             <li className="nav-item">
               <Link className="nav-link" to="/services">Services</Link>
             </li>
@@ -63,7 +62,7 @@ export default function Header({ isAuthenticated }) {
                 </Link>
               ) : (
                 <div className="d-flex align-items-center">
-                  <Link to="/login" className="nav-link text-white fs-7">
+                  <Link to="/login" className="nav-link text-white fs-7" onClick={onLogin}>
                     Login
                   </Link>
                   <span className="text-white fs-5">|</span>
@@ -117,4 +116,4 @@ export default function Header({ isAuthenticated }) {
       </div>
     </nav>
   );
-};
+}

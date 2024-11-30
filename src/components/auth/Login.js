@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useLoginMutation, useGetCartQuery } from '../../features/auth/apiSlice';
+import { useGetCartQuery, useLoginMutation } from '../../features/auth/apiSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-const Login = ({ handleLogin, refreshCart }) => {
-  const navigate = useNavigate();
-  const [login, { isLoading }] = useLoginMutation(); 
+const Login = ({ handleLogin }) => {
   const { refetch: refetchCart } = useGetCartQuery();
+  const navigate = useNavigate();
+  const [login, { isLoading }] = useLoginMutation();
 
   const [credentials, setCredentials] = useState({
     email: '',
@@ -23,15 +23,15 @@ const Login = ({ handleLogin, refreshCart }) => {
     e.preventDefault();
     try {
       const response = await login(credentials).unwrap();
+      // Save token and user info
       localStorage.setItem('token', response.token);
       localStorage.setItem('user_id', response.user.id);
       sessionStorage.removeItem('session_key');
-      if (refreshCart) await refetchCart();
-      
       handleLogin();
+
+      refetchCart();
       toast.success('Welcome!');
-      // if (refreshCart) await refetchCart();
-      navigate('/profile');
+      navigate('/profile'); 
     } catch (error) {
       console.error('Login error:', error);
       setMessage(error.data?.error || 'Login failed.');
@@ -68,10 +68,14 @@ const Login = ({ handleLogin, refreshCart }) => {
           <button
             type="submit"
             className="btn btn-primary w-100 d-flex justify-content-center align-items-center"
-            disabled={isLoading} 
+            disabled={isLoading}
           >
             {isLoading ? (
-              <div className="spinner-border text-light" role="status" style={{ width: '1.2rem', height: '1.2rem' }}>
+              <div
+                className="spinner-border text-light"
+                role="status"
+                style={{ width: '1.2rem', height: '1.2rem' }}
+              >
                 <span className="visually-hidden">Loading...</span>
               </div>
             ) : (

@@ -30,7 +30,7 @@ const apiSlice = createApi({
         method: 'POST',
         body: credentials,
       }),
-      invalidatesTags: ["loginCart"], 
+      invalidatesTags: ["loginCart","cart"], 
       providesTags: ["LogOut"],
     }),
     verifyCode: builder.mutation({
@@ -46,7 +46,7 @@ const apiSlice = createApi({
         method: 'POST',
         
       }),
-      invalidatesTags: ["LogOut"], 
+      invalidatesTags: ['cart', 'profile', 'orders'],
     }),
     sendVerificationCode: builder.mutation({
       query: (email) => ({

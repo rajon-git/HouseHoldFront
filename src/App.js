@@ -23,7 +23,7 @@ import OrderDetailsPage from './components/Order/OrderDetailsPage';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
-
+  
   const handleLogin = () => {
     setIsAuthenticated(true);
   };
@@ -42,7 +42,7 @@ const App = () => {
         <main>
           <Routes>
             <Route path="/" element={<Homepage isAuthenticated={isAuthenticated}/>} />
-            <Route path="/login" element={<Login handleLogin={handleLogin} />} />
+            <Route path="/login" element={<Login handleLogin={handleLogin}/>} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify-code" element={<VerifyCode />} />
             <Route path="/send-verification-code" element={<SendVerificationCode />} />
